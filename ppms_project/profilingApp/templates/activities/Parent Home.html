@@ -1,0 +1,372 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- table layout -->
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/datatables.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/datatables.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/datatables.js' %}"></script>
+
+    
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+
+    <script src="{% static '/Javascript/js/Chart.min.js' %}" crossorigin="anonymous"></script>
+
+
+    {% block dashboard %}   
+    <title>PPMS | Home </title>
+</head>
+        <!-- Header -->
+    <div class="site-header">
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark index__navbar scrolled border-bottom" style=" padding-left:3%; padding-right:3%;">
+            <div class="container-fluid justify-content-between mx-2" >
+                <div>
+                    <a href="#" class="name" style="text-decoration: none; ">
+                        <img class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="parenthidetitle" class="brand__name" style="color:#2c5f2dff;margin-left:15px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <div class="btn-group my-2">
+                    <li>
+                        <a class="btn nav-link" id="parentButton" data-bs-toggle="dropdown" data-toggle="tooltip" data-bs-placement="left" data-bs-offset="0,7"
+                        title="User Settings" aria-expanded="false">
+                            <i class="fa fa-fw fa-user-cog bi" style="font-size: 24px;"></i>
+                            <span class="position-absolute top-100 start-75 translate-middle badge rounded-pill text-dark" style="border-radius: 50%;">
+                                <i class="fa fa-lg fa-fw fa-caret-down bg-light" style="border-radius: 25%; margin-bottom: 15px;"></i>
+                            </span>
+                        </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end p-2 bg-white" style="margin-right:3%;" aria-labelledby="parentButton">
+                            <div class="text-dark bg-white"style="text-decoration: none;"href="">
+                                <div class="card p-3" style="min-width: 13vw;">
+                                    <div class="row d-block">
+                                        <div class="d-flex justify-content-center my-2 rounded-circle">
+                                            <i class="fa fa-lg fa-fw fa-user bi" style="margin-left:5px;"></i>  
+                                        </div>
+                                         <div class="d-flex justify-content-center text-center p-2">  
+                                            <span style="font-size: 15px;"> {{ user.first_name }} {{ user.last_name }} </span>
+                                         </div>
+                                    </div>
+                                </div>
+                                <a class="card-footer d-flex align-items-center justify-content-center text-dark" style="height:30px;" href="{% url 'PG_pass' user.id %}">
+                                    <p class="mt-3 text-dark"style="font-size:15px;">View Profile</p>
+                                </a>
+                            </div>
+                            
+                            <div>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" style="background-color: rgba(255, 255, 255, 0); padding: 2px !important; margin-left:7px;" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out-alt mx-1"></i>Sign out</a></li>
+                            </div>
+                        </ul>                   
+                    </li>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+   })
+ </script>
+
+<body >
+    <div class="" id="secondNav">
+        <div class="row"> 
+            <div class="row d-flex justify-content-stretch align-items-center m-1">
+                <div class="col-sm-6 d-flex justify-content-sm-start justify-content-center align-items-center text-uppercase">
+                    <h5 class="m-0"style="text-align:left;">My Preschoolers</h5>
+                </div>
+                <div class="col-sm-6 d-flex justify-content-sm-end justify-content-center align-items-center">
+                    <button style="background-color: #188045;border-color:#188045;" type="button" class="btn hoverableButton btn-primary" data-bs-toggle="modal" data-bs-target="#addSched">
+                        <span class="fa fa-calendar-alt"></span> Enroll Preschooler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="grid" class="container-fluid" style="padding:7%;"  >
+        <div class="container-fluid">
+            <div class="modal fade" id="addSched" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header" >
+                            <h5 class="modal-title fw-bold mx-2" id="exampleModalLabel"><i class="fa fa-user-edit" style="color: #188045;"></i> Enroll Preschooler</h5>
+                        </div>
+                        <div class="modal-body mx-4">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="md-form mb-2" >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">First Name: </label>
+                                    <input class="form-control" type="text" name="first_name" id="first_name" required>
+                                </div>
+                                <div class="md-form mb-2" >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Middle name:</label>
+                                    <input class="form-control" type="text" name="middle_name" id="middle_name" required>
+                                </div>
+                                <div class="md-form mb-2" >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Last name:</label>
+                                    <input class="form-control" type="text" name="last_name" id="last_name" required>
+                                </div>
+                                <div class="md-form mb-2"  >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Suffix (Optional):</label>
+                                    <input class="form-control" type="text" placeholder="If Applicable" name="suffix_name" id="suffix_name">
+                                </div>
+                                <div class="md-form mb-2" >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Birthdate:</label>
+                                    <input class="form-control" type="date" name="birthday" id="birthday" required>
+                                </div>
+                                <div class="md-form mb-2" >
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Gender:</label>
+                                    <select name="gender" class="form-select" aria-label="Default select example" required>
+                                        <option value="Male" selected>Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="modal-footer justify-content-end" >
+                            <button type="button" data-bs-dismiss="modal" style="background-color: red; color: white; min-width: 15%;" class="btn hoverableButtonRed">Cancel</button>
+                            <button type="submit" class="btn btn-primary hoverableButton" style="background-color: #188045;border-color: #188045; min-width: 15%;">Enroll</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for chunk in chunks %}
+            <div class="row">
+                {% for item in chunk %}
+                    <div class="col-xl-{{ numberOfColumns }} mb-3">
+                        <a class="card hoverable text-decoration-none" href="{% url 'parent_preschooler' item.id %}" style="min-height: 140px;border-radius: 10px 10px 10px 10px;">
+                            <div class="card-body d-flex flex-column align-items-stretch justify-content-center">
+                                <div class="text-center">
+                                    <div class="row">
+                                        <div class="col-4 d-flex justify-content-center align-items-center text-center p-2">
+                                            {% if item.gender == 'Male' %}
+                                                {% if item.ps_image %}
+                                                    <img class="rounded-circle" src="/Media/{{ item.ps_image }}" width="100%" height="100%" style="min-width: 85px;">
+                                                {% else %}
+                                                    <img class="rounded-circle"src="{% static '/Media/kidBoy.jpg' %}" height="100%" width="100%" style="min-width: 85px;">
+                                                {% endif %}
+                                            {% elif item.gender == 'Female' %}
+                                                {% if item.ps_image %}
+                                                    <img class="rounded-circle" src="/Media/{{ item.ps_image }}" width="100%" height="100%" style="min-width: 85px;">
+                                                {% else %}
+                                                    <img class="rounded-circle"src="{% static '/Media/kidGirl.jpg' %}" height="100%" width="100%" style="min-width: 85px;">
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                        <div id="parentCardsText" class="col-8 d-flex justify-content-center align-items-center text-start text-body">
+                                            <div>
+                                                <div class="row text-capitalize">
+                                                    Name : {{ item.last_name }}, {{ item.first_name }} {{ item.middle_name }} {{ preschooler.suffix_name }} 
+                                                </div>
+                                                <div class="row">
+                                                    {% if item.age_months >= 60 %}
+                                                    <div class="d-flex flex-row p-0"> Age: {{item.age_months}} months <p class="text-danger mx-1 my-0">(Overage)</p> </div>
+                                                        
+                                                    {% else %}
+                                                        Age: {{item.age_months}} months
+                                                    {% endif %}
+                                                </div>
+                                                <div class="row text-capitalize">
+                                                    Gender: {{ item.gender }}
+                                                </div>
+                                                <div class="row">
+                                                    {% if item.whfa is None %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class="text-danger mx-1 my-0">No Record</p> </div>
+                                                    {% elif item.whfa > 3.0 %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class=" mx-1 my-0" style="color: rgb(242, 98, 33);">Obese</p> </div>
+                                                    {% elif item.whfa > 2.0 and item.whfa <= 3.0 %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class=" mx-1 my-0" style="color: rgb(242, 98, 33);">Overweight</p> </div>
+                                                    {% elif item.whfa >= -2.0 and item.whfa <= 2.0 %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class=" mx-1 my-0" style="color: rgb(0, 165, 79);">Normal</p> </div>
+                                                    {% elif item.whfa >= -3.0 and item.whfa < -2.0 %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class=" mx-1 my-0" style="color: rgb(255, 241, 2);">Moderately Wasted</p> </div>
+                                                    {% else %}
+                                                        <div class="d-flex flex-row p-0"> Last Status: <p class=" mx-1 my-0" style="color: rgb(238, 29, 35);">Severely Wasted</p> </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="row">
+                                                    {% if item.vaccine_count >= 14 %}
+                                                    <div class="d-flex flex-row p-0"> Vaccine: <p class="text-success mx-1 my-0">Complete</p> </div>
+                                                    {% elif item.vaccine_count == 0 %}
+                                                    <div class="d-flex flex-row p-0"> Vaccine: <p class="text-danger mx-1 my-0">No Record</p></div>
+                                                    {% else %}
+                                                    <div class="d-flex flex-row p-0"> Vaccine: <p class="text-warning mx-1 my-0">On Going</p></div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center text-muted">
+                                <span> Click card for more details</span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    {% endblock %}
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+    <input type="checkbox" id="helpCheckBox">
+    <label class="help-container"  for="helpCheckBox" >
+        <label class="button helpIconButton hoverableButton" for="helpCheckBox" >
+        <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+        </label>
+        <ul class="helpOptions">
+            <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ1">How to view my Preschooler's Immunization Status?</span>
+            </li>
+            <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ2">How to view my Preschooler's Nutritional Status?</span>
+            </li>
+            <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ3">How can I enroll a Preschooler?</span>
+            </li>
+            <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ4">How can I change Password?</span>
+            </li>
+            </ul>
+    </label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentViewNutrition.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentViewVax.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentEnroll.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentChangePassword.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Footer -->
+    <div class="footer text-muted">
+        <div class="container">
+            <div class="row text-center align-items-center">
+                <div class="border-top p-4">
+                    <p class="copyright"><small>
+                    Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                    </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+        document.getElementById("birthday").max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+</script>
+
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+            <script>
+                Swal.fire({
+                icon: 'warning',
+                title: 'Already Exists',
+                text: '{{message}}',
+                confirmButtonText: "Ok",
+                confirmButtonColor: '#EF3A25',
+            });
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}

@@ -1,0 +1,1137 @@
+{% load static %}
+{% block dashboard %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- table layout -->
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+
+    <script src="{% static '/Javascript/js/Chart.min.js' %}" crossorigin="anonymous"></script>
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/y-icon">
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/datatables.min.css' %}">
+    <script src="{% static '/CSS/DataTables/datatables.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/Buttons-1.7.1/css/buttons.bootstrap5.css' %}">
+    <script src="{% static '/CSS/DataTables/Buttons-1.7.1/js/buttons.bootstrap5.js' %}"></script>
+
+
+<title>PPMS | Preschooler Status</title>
+</head>
+<body>
+
+<header>
+    <div class="site-header">
+    <nav class="navbar fixed-top index__navbar scrolled border-bottom" 
+    style=" padding-left:3%; padding-right:3%;">
+        <div class="flex-fill p-1 py-1">
+            <div id="mobileNav" class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="#" class="name" style="text-decoration: none;">
+                        <img id="adminIcon" class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="adminHidetitle" class="brand__name" style="color:rgb(0, 0, 0); margin-left:10px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <label class="burger "for="toggle"><i  id="hamburger" class="fa fa-fw fa-bars" style="font-size: 24px;"></i></label>
+                <input type="checkbox" id="toggle">
+                <div class="menu" id="navLinks">
+                    <ul id="nav" class="nav text-small">
+                        <li>
+                            <a href="{% url 'admin_home' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"  
+                            title="Admin Home">
+                            <i id="navIcon" class="fa fa-fw fa-home" style="font-size: 24px;"></i>   
+                            <span id="navText" style="font-size: 20px;"><i class="fa fa-fw fa-home" style="font-size: 20px;margin-right:8px;"></i>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_home2' %}" style="color:rgb(27, 177, 92) !important;"class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Preschooler Status">
+                            <i id="navIcon" class="fa fa-3x fa-fw fa-id-card " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px; color:rgb(27, 177, 92) !important;" ><i class="fa fa-fw fa-id-card" style="font-size: 20px;margin-right:8px;"></i>Preschooler Status</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_barangay' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="List of Barangay">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-landmark " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px;" ><i class="fa fa-fw fa-landmark" style="font-size: 20px;margin-right:8px;"></i>List of Barangay</span>
+                            </a>
+                        </li>
+                        <li>
+                            {% if invalidated_count > 0 %}
+                            <a href="{% url 'bhw_validation' %}" class="nav-link"  data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                                title="BHW Validation" >
+                                <i id="navIcon" class="fa fa-fw fa-user-md" style="font-size: 24px;"></i>
+                                <span id="navText" style="font-size: 20px; " ><i class="fa fa-fw fa-user-md" style="font-size: 20px;margin-right:8px;"></i>BHW Validation</span>
+                                <span class="position-absolute top-25 start-75 translate-middle badge rounded-pill bg-danger">
+                                    !
+                                    <span class="visually-hidden">BHW Validation</span>
+                                </span></a>
+                            {% else %}
+                            <a href="{% url 'bhw_validation' %}" class="nav-link"  data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                                title="BHW Validation" >
+                                <i id="navIcon" class="fa fa-fw fa-user-md" style="font-size: 24px;"></i>  
+                                <span id="navText"style="font-size: 20px; " ><i class="fa fa-fw fa-user-md" style="font-size: 20px;margin-right:8px;"></i>BHW Validation</span>
+                                </a>
+                            {% endif %}
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_userAccounts' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Accounts">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-users " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px; " ><i class="fa fa-fw fa-users" style="font-size: 20px;margin-right:8px;"></i>User Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_historyLogs' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="History Logs">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-clipboard-list " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px;" ><i class="fa fa-fw fa-clipboard-list" style="font-size: 20px;margin-right:8px;"></i>History Logs</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a id="navIcon" class="btn nav-link position-relative" id="dropdownUser1" data-bs-toggle="dropdown" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Settings" aria-expanded="false">
+                                <i class="fa fa-fw fa-user-cog bi" style="font-size: 24px;"></i>
+                                <span class="position-absolute top-100 start-75 translate-middle badge rounded-pill text-dark" style="border-radius: 50%;">
+                                    <i class="fa fa-lg fa-fw fa-caret-down bg-light" style="border-radius: 25%; margin-bottom: 15px;"></i>
+                                </span></a>
+                            </a>
+                            <a id="navText" style="color:white; text-decoration: none;font-size: 20px;"href="{% url 'logout' %}" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Log Out Account"><i class="fa fa-fw fa-sign-out-alt" style="font-size: 20px;margin-right:8px;"></i>Sign Out</a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2" style="margin-right:3%;" aria-labelledby="dropdownUser1">
+                                <div class="card p-3 d-flex align-items-center justify-content-center">
+                                    <div class="row d-block">
+                                        <div class="d-flex justify-content-center my-2">
+                                            <i class="fa fa-lg fa-fw fa-user bi" style="margin-left:5px ;"></i>  
+                                        </div>
+                                         <div class="d-flex justify-content-center text-center p-2">  
+                                            <span style="font-size: 15px;"> {{ user.first_name }} {{ user.last_name }} </span>
+                                         </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" style="background-color: rgba(255, 255, 255, 0); padding: 2px !important; margin-left:7px;"href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out-alt"></i>Sign out</a></li>
+                                </div>  
+                            </ul>                    
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </div>
+</header>
+
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+   })
+ </script>
+
+<!-- Dashboard -->
+<div id="grid" class="container-fluid">
+    <div class="container">
+        <div class="container">
+            <div class="row"> 
+                <div class="col-sm-6 mb-3 d-flex justify-content-sm-start justify-content-center text-center">
+                    <h3> Preschooler Status Overview</h3>
+                </div>
+                <div class="col-sm-6  mb-3 d-flex justify-content-sm-end justify-content-center text-center">
+                    <div class="text-right" style="width: 10rem;">
+                        <div class="dropdown text-center" >
+                            <h6 class="text-uppercase text-dark dropdown-header"><i class="fa fa-3x fa-fw fas fa-landmark " style="font-size: 15px; margin-right: 5px;"></i>Barangay</h6>
+                            <select class="form-select" style="cursor: pointer;" aria-label="Default select example" onchange="javascript:handleNextView(this)">
+                                <option value="{% url 'admin_home2' %}">All</option>
+                                {% for barangay in barangays %}
+                                <option value="{% url 'apreschoolersb' barangay.id %}">{{ barangay.brgy_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="row d-flex align-items-stretch mb-3">
+            <div class="col-lg mb-2">
+                <div class="card shadow-sm bg-white rounded h-100">
+                    <div class="card-header">
+                        <h4 class="card-title">Number of Preschoolers</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                                <div class="d-block">
+                                    <p style="font-size: xx-large; " class="card-text fw-bold"><i class="fas fa-sm fa-child" style="color: #ffc107 ;"></i> {{ all_preschooler_count }}</p>
+                                    <p class="text-uppercase fw-bold">Registered preschoolers</p>
+                                </div>
+                                
+                            
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <div class="d-block">
+                                    <p style="font-size: xx-large;" class="card-text fw-bold"><i class="fa fa-sm fa-archive" style="color: #d86a10 ;"></i>  {{ preschooler_60_above_count }}</p>
+                                    <p class="text-uppercase fw-bold">Archived Preschoolers (60 months and above old) </p>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 d-block">
+                                <p style="font-size: xx-large; " class="card-text fw-bold"><i class="fa fa-sm fa-check-circle" style="color: #2fbc44;"></i>  {{ preschooler_with_record_count }}</p>
+                                <p class="text-uppercase fw-bold">Preschoolers with records </p>
+                            </div>
+                            <div class="col-md-6 d-block">
+                                <p style="font-size: xx-large;" class="card-text fw-bold"><i class="fa fa-sm fa-times-circle" style="color: #d23114;" ></i>  {{ preschooler_without_record_count }}</p>
+                                <p class="text-uppercase fw-bold">Preschoolers with no records </p>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- MODAL FOR ARCHIVE PRESCHOOLERS -->
+        <div class="modal fade" id="modalArc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-archive" style="color:#188045;"></i> Preschooler Archive</h5>
+                        </div>
+                        <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-body p-0"  >
+                        <div class="table-responsive " style="margin:30px;">
+                            <h5 class="text-center">List of preschooler who have an age older that 60 months.</h5>
+                            <table class="table table-hover table-cell-border" id="archive" >
+                                <thead>
+                                    <tr style="text-align: center;">
+                                        <th scope="col">No</th>
+                                        <th scope="col">Last Name</th>
+                                        <th scope="col">First Name</th>
+                                        <th scope="col">Middle Name</th>
+                                        <th scope="col">Suffix</th>
+                                        <th scope="col">Gender</th>
+                                        <th scope="col">Birthdate</th>
+                                        <th scope="col">Age Last Measured (Month)</th>
+                                        <th scope="col">WFA STATUS</th>
+                                        <th scope="col">HFA STATUS</th>
+                                        <th scope="col">WHFA STATUS</th>
+                                        <th scope="col">Vaccine status</th>
+                                    </tr>   
+                                </thead>
+                                <tbody>
+                                    {% for preschooler in preschooler_60_above %}
+                                    <tr style="text-align: center;">
+                                        <td></td>
+                                        <td>{{ preschooler.last_name }}</td>
+                                        <td>{{ preschooler.first_name }}</td>
+                                        <td>{{ preschooler.middle_name }}</td>
+                                        <td>{{ preschooler.suffix_name }}</td>
+                                        {% if preschooler.gender == 'Male' %}
+                                            <td class="text-uppercase textShadow" style="color:rgb(26, 171, 187)">{{ preschooler.gender }}</td>
+                                        {% else %}
+                                            <td class="text-uppercase textShadow" style="color:rgb(233, 63, 202)">{{ preschooler.gender }}</td>
+                                        {% endif %}
+                                        <td>{{ preschooler.birthday }}</td>
+                                        {% if preschooler.age_measured == 'Undefined' %}
+                                            <td>No Measuring Record</td>
+                                        {% else %}
+                                            <td>{{ preschooler.age_measured }} Months</td>
+                                        {% endif %}
+
+                                        {% if preschooler.wfa is None %}
+                                            <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                        {% elif preschooler.wfa > 2.0 %}
+                                            <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.wfa }})</td>
+                                        {% elif preschooler.wfa >= -2.0 and preschooler.wfa <= 2.0 %}
+                                            <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.wfa }})</td>
+                                        {% elif preschooler.wfa >= -3.0 and preschooler.wfa < -2.0 %}
+                                            <td style="background-color: rgb(255, 241, 2);"> Underweight ({{ preschooler.wfa }})</td>
+                                        {% else %}
+                                            <td style="background-color: rgb(238, 29, 35);"> Severely Underweight ({{ preschooler.wfa }})</td>
+                                        {% endif %}
+
+                                        {% if preschooler.hfa is None %}
+                                            <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                        {% elif preschooler.hfa > 2.0 %}
+                                            <td style="background-color: rgb(0, 165, 79);"> Tall ({{preschooler.hfa }})</td>
+                                        {% elif preschooler.hfa >= -2.0 and preschooler.hfa <= 2.0 %}
+                                            <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.hfa }})</td>
+                                        {% elif preschooler.hfa >= -3.0 and preschooler.hfa < -2.0 %}
+                                            <td style="background-color: rgb(255, 241, 2);"> Stunted ({{ preschooler.hfa }})</td>
+                                        {% else %}
+                                            <td style="background-color: rgb(238, 29, 35);"> Severely Stunted ({{ preschooler.hfa }})</td>
+                                        {% endif %}
+
+
+                                        {% if preschooler.whfa is None %}
+                                            {% if preschooler.height < 45.0 %}
+                                                <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Small for WHFA Tagging) </p></td>
+                                            {% elif preschooler.height > 110.0 %}
+                                                <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Tall for WHFA Tagging) </p></td>
+                                            {% else %}
+                                                <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                            {% endif %}
+    
+                                        {% elif preschooler.whfa > 3.0%}
+                                            <td style="background-color: rgb(242, 98, 33);"> Obese ({{ preschooler.whfa }})</td>
+                                        {% elif preschooler.whfa > 2.0 and preschooler.whfa <= 3.0 %}
+                                            <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.whfa }})</td>
+                                        {% elif preschooler.whfa >= -2.0 and preschooler.whfa <= 2.0 %}
+                                            <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.whfa}})</td>
+                                        {% elif preschooler.whfa >= -3.0 and preschooler.whfa < -2.0 %}
+                                            <td style="background-color: rgb(255, 241, 2);"> Moderately Wasted ({{ preschooler.whfa }})</td>
+                                        {% else %}
+                                            <td style="background-color: rgb(238, 29, 35);"> Severely Wasted ({{preschooler.whfa }})</td>
+                                        {% endif %}
+                                        
+                                        {% if preschooler.vaccine_count == 8 %}
+                                            <td class=" text-success textShadow">Complete</td>
+                                        {% elif preschooler.vaccine_count == 0 %}
+                                            <td class=" text-danger textShadow">No Record</td>
+                                        {% else %}
+                                            <td class=" text-warning textShadow">Incomplete</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+    
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white;min-width: 10%;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- END OF MODAL -->
+        <div class="mb-4">
+            <div class="card-header">
+                <h4>Preschooler's Nutrition Summary Chart</h4>
+            </div>
+            <div class="card shadow-sm bg-white rounded">
+                <div class="row d-flex align-items-stretch" style="padding:25px 60px 0px 60px;">
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(238, 29, 35) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0 ">{{ severly }}</p>
+                                <h6 class="fw-bold">Severely Wasted</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(255, 241, 2) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ wasted }}</p>
+                                <h6 class="fw-bold">Moderately Wasted</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(0, 165, 79) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ normal }}</p>
+                                <h6 class="fw-bold">Normal</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(242, 98, 33) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ overweight }}</p>
+                                <h6 class="fw-bold">Overweight</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(242, 98, 33) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ obese }}</p>
+                                <h6 class="fw-bold">Obese</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="myBar" width="100%" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card-header">
+                    <h4>List of Preschoolers</h4>
+                </div>
+                <div class="card shadow-lg p-3 bg-white rounded" >
+                    <div class="d-flex justify-content-md-end justify-content-center my-2">
+                        <button class="btn hoverableButton" type="button" id="adminArchive" data-bs-toggle="modal" data-bs-target="#modalArc" ><h6 style="padding:5px;margin-bottom: 0px !important;"><i class="fa fa-archive"></i> View Archive</h6></button>
+                    </div>
+                    <div class="table-responsive" >
+                        <table class="table table-hover table-cell-border" id="adminPreschoolerList" >
+                            <thead>
+                                <tr style="text-align: center;">
+                                    <th scope="col">No</th>
+                                    <th scope="col">Last Name</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Middle Name</th>
+                                    <th scope="col">Suffix</th>
+                                    <th scope="col">Gender</th>
+                                    <th scope="col">Birthdate</th>
+                                    <th scope="col">Age Last Measured (Month)</th>
+                                    <th scope="col">WFA STATUS</th>
+                                    <th scope="col">HFA STATUS</th>
+                                    <th scope="col">WHFA STATUS</th>
+                                    <th scope="col">Vaccine status</th>
+                                </tr>   
+                            </thead>
+                            <tbody>
+                                {% for preschooler in all_preschoolersList %}
+                                <tr style="text-align: center;">
+                                    <td></td>
+                                    <td class="text-capitalize">{{ preschooler.last_name }}</td>
+                                    <td class="text-capitalize">{{ preschooler.first_name }}</td>
+                                    <td class="text-capitalize">{{ preschooler.middle_name }}</td>
+                                    <td class="text-capitalize">{{ preschooler.suffix_name }}</td>
+                                    {% if preschooler.gender == 'Male' %}
+                                    <td class="text-uppercase textShadow" style="color:#1aabbb">{{ preschooler.gender }}</td>
+                                    {% else %}
+                                    <td class="text-uppercase textShadow" style="color:#e93fca">{{ preschooler.gender }}</td>
+                                    {% endif %}
+                                    <td>{{ preschooler.birthday }}</td>
+                                    {% if preschooler.age_measured == 'Undefined' %}
+                                        <td>No Measuring Record</td>
+                                    {% else %}
+                                        <td>{{ preschooler.age_measured }} Months</td>
+                                    {% endif %}
+
+                                    {% if preschooler.wfa is None %}
+                                        <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                    {% elif preschooler.wfa > 2.0 %}
+                                        <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.wfa }})</td>
+                                    {% elif preschooler.wfa >= -2.0 and preschooler.wfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.wfa }})</td>
+                                    {% elif preschooler.wfa >= -3.0 and preschooler.wfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Underweight ({{ preschooler.wfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Underweight ({{ preschooler.wfa }})</td>
+                                    {% endif %}
+
+                                    {% if preschooler.hfa is None %}
+                                        <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                    {% elif preschooler.hfa > 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Tall ({{preschooler.hfa }})</td>
+                                    {% elif preschooler.hfa >= -2.0 and preschooler.hfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.hfa }})</td>
+                                    {% elif preschooler.hfa >= -3.0 and preschooler.hfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Stunted ({{ preschooler.hfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Stunted ({{ preschooler.hfa }})</td>
+                                    {% endif %}
+
+
+                                    {% if preschooler.whfa is None %}
+                                        {% if preschooler.height < 45.0 %}
+                                            <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Small for WHFA Tagging) </p></td>
+                                        {% elif preschooler.height > 110.0 %}
+                                            <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Tall for WHFA Tagging) </p></td>
+                                        {% else %}
+                                            <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                        {% endif %}
+
+                                    {% elif preschooler.whfa > 3.0%}
+                                        <td style="background-color: rgb(242, 98, 33);"> Obese ({{ preschooler.whfa }})</td>
+                                    {% elif preschooler.whfa > 2.0 and preschooler.whfa <= 3.0 %}
+                                        <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.whfa }})</td>
+                                    {% elif preschooler.whfa >= -2.0 and preschooler.whfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.whfa}})</td>
+                                    {% elif preschooler.whfa >= -3.0 and preschooler.whfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Moderately Wasted ({{ preschooler.whfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Wasted ({{preschooler.whfa }})</td>
+                                    {% endif %}
+                                    
+                                    {% if preschooler.vaccine_count == 8 %}
+                                    <td class=" text-success textShadow">Complete</td>
+                                    {% elif preschooler.vaccine_count == 0 %}
+                                        <td class=" text-danger textShadow">No Record</td>
+                                    {% else %}
+                                        <td class=" text-warning textShadow">Incomplete</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- USER MANUAL / HELP-->
+<input type="checkbox" id="helpCheckBox">
+<label class="help-container"  for="helpCheckBox" >
+    <label class="button helpIconButton hoverableButton" for="helpCheckBox" >
+    <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+    </label>
+    <ul class="helpOptions">
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ1">How can I view the history logs of this system?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ2">How can I view/set password for the different user of this system?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ3">How can I validate account of BHW/BNS?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ4">How can I view/add Barangay?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ5">How can I view Preschooler Records?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#adminQ6">How can I Filter Data on Tables/Exports?</span>
+        </li>
+    </ul>
+</label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/adminViewLogs.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/adminViewUsers.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/adminValidate.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/adminAddBarangay.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q5 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/adminViewRecords.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q6 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="adminQ6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/filterTable.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer text-muted">
+    <div class="container">
+        <div class="row text-center align-items-center">
+                <div class="border-top p-4">
+                    <p class="copyright"><small>
+                    Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                    </small>
+                    </p>
+                </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+    function handleNextView(el){ 
+        window.location.assign( el.value ); /* redirect on select */
+    };
+</script>
+
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+    Chart.defaults.global.defaultFontSize = 15;
+
+    // Pie Chart Example
+    var data_count = JSON.parse('{{ count_data|escapejs }}')
+    var ctx = document.getElementById("myBar");
+    var myBar = new Chart(ctx, {
+    type: 'bar',
+    options: {
+        legend: {
+            display: false
+        },
+        scales:{
+            yAxes:[{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'NUMBER OF PRESCHOOLERS',
+                },
+                ticks: {
+                    beginAtZero: true,
+                }
+            }],
+            xAxes:[{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'NUTRIONAL STATUS',
+                }
+            }],
+        }
+    },
+    data:{
+        labels: ["Severely Wasted", "Moderately Wasted", "Normal","Overweight","Obese"],
+        datasets: [{
+                label: 'Preschoolers',
+                data: data_count,
+                backgroundColor: [
+                'rgb(238, 29, 35)',
+                'rgb(255, 241, 2)',
+                'rgb(0, 165, 79)',
+                'rgb(242, 98, 33)',
+                'rgb(242, 98, 33)',
+                ],
+                borderColor: [
+                'rgb(238, 29, 35)',
+                'rgb(255, 241, 2)',
+                'rgb(0, 165, 79)',
+                'rgb(242, 98, 33)',
+                'rgb(242, 98, 33)',
+                ],
+                borderWidth: 1
+            }
+            ]},
+    Option: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+             }   
+            },
+        },
+    });
+</script>
+
+<script>
+    function getMessageTopT1(data = {}) {
+        return 'Number of Preschoolers: ' + data.total + '                                                                        '+
+        'Number of Preschoolers With Records: ' + data.withRecord + '                                   '+
+        'Number of Preschoolers Without Records: ' + data.withoutRecord + '                                   ' +
+        'Number of Complete Vaccine Record: ' + data.comp + '                                                    '+
+        'Number of Incomplete Vaccine Record: ' + data.inco + '                                  '+
+        'Number of No Vaccine Record: ' + data.no + '                                   ' +
+        'Number of Moderately Wasted Status: ' + data.wasted + '                                                   ' +
+        'Number of Severly Wasted Status: ' + data.severe + '                                            ' +
+        'Number of Overweight Status: ' + data.overweight + '                                                ' +
+        'Number of Normal Status: ' + data.normal + '                                                                         ' +
+        'Number of Obese Status: ' + data.obese + '                                                                                                                                                                                                   ' +
+        'Number of Male Preschoolers: ' + data.male + '                                                                 ' + 
+        'Number of Female Preschoolers: ' + data.female;
+    }
+    var t1 = $('#archive').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Generate Excel ',
+                    title: 'List of Archived Preschoolers in Barangay '+ '{{ brgy }}' +' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    autoFilter: true,
+
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'List of Archived Preschoolers in Barangay '+ '{{ brgy }}' +' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    messageTop: getMessageTopT1(),    
+                    customize: function(doc){
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        var result = {
+                            total: 0,
+                            withRecord: 0,
+                            withoutRecord: 0,
+                            wasted: 0,
+                            severe: 0,
+                            overweight: 0,
+                            normal: 0,
+                            obese: 0,
+                            male: 0,
+                            female: 0,
+                            inco: 0,
+                            comp: 0,
+                            no: 0,
+                        };
+
+                        var tableLength = doc.content[2].table.body.length;
+                        result.total = tableLength - 1;
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][5].text;
+                                if (val == 'Male'){
+                                    doc.content[2].table.body[i+1][5].color = '#1aabbb';
+                                    result.male++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][5].color = '#e93fca';
+                                    result.female++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][11].text;
+                                if (val == 'Complete'){
+                                    doc.content[2].table.body[i+1][11].color = '#28a745';
+                                    result.comp++;
+                                }
+                                else if (val == 'No Record'){
+                                    doc.content[2].table.body[i+1][11].color = '#dc3545';
+                                    result.no++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][11].color = '#ffc107';
+                                    result.inco++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][8].text;
+                                var WFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WFA == 0){
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#d3d3d3';
+                                }
+                                else if (WFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#f26221';
+                                }
+                                else if (WFA >= -2.0 && WFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#00a54f';
+                                }
+                                else if (WFA >= -3.0 && WFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][9].text;
+                                var HFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (HFA == 0){
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#d3d3d3';
+                                }
+                                else if (HFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA  >= -2.0 && HFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA >= -3.0 && HFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][10].text;
+                                var WHFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WHFA == 0){
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#d3d3d3';
+                                    result.withoutRecord++;
+                                }
+                                else if (WHFA > 3.0) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.obese++;
+                                }
+                                else if (WHFA > 2.0 && WHFA <= 3.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.overweight++;
+                                }
+                                else if (WHFA >= -2.0 && WHFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#00A54F';
+                                    result.withRecord++;
+                                    result.normal++;
+                                }
+                                else if (WHFA >= -3.0 && WHFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#FFF102';
+                                    result.withRecord++;
+                                    result.wasted++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#EE1D23';
+                                    result.withRecord++;
+                                    result.severe++;
+                                }
+                            } catch(ee) { }
+                        };
+                        doc.defaultStyle.fontSize = 12; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 12; //2, 3, 4, etc
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.content[2].table.widths = [ '2%', '10%',  '8%', '10%', '5%', '5%', '10%', '10%','10%','10%','10%','10%',];
+                        doc.content[1].text = getMessageTopT1(result);
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+            'bSortable': false,
+            'aTargets': ['nosort'],
+            'orderable': false,
+            'targets': [0],
+        }],
+        order: [[1, 'asc']],
+        });
+        t1.on('order.dt search.dt', function () {
+        let i = 1;
+        t1.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+            this.data(i++);
+        });}).draw();
+</script>
+<script>
+    function getMessageTopT2(data = {}) {
+        return 'Number of Preschoolers: ' + data.total + '                                                                        '+
+        'Number of Preschoolers With Records: ' + data.withRecord + '                                   '+
+        'Number of Preschoolers Without Records: ' + data.withoutRecord + '                                   ' +
+        'Number of Complete Vaccine Record: ' + data.comp + '                                                    '+
+        'Number of Incomplete Vaccine Record: ' + data.inco + '                                  '+
+        'Number of No Vaccine Record: ' + data.no + '                                   ' +
+        'Number of Moderately Wasted Status: ' + data.wasted + '                                                   ' +
+        'Number of Severly Wasted Status: ' + data.severe + '                                            ' +
+        'Number of Overweight Status: ' + data.overweight + '                                                ' +
+        'Number of Normal Status: ' + data.normal + '                                                                         ' +
+        'Number of Obese Status: ' + data.obese + '                                                                                                                                                                                                   ' +
+        'Number of Male Preschoolers: ' + data.male + '                                                                 ' + 
+        'Number of Female Preschoolers: ' + data.female;
+    }
+    var t2 = $('#adminPreschoolerList').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Generate Excel ',
+                    title: 'List of Preschoolers in Barangay ' +'{{ brgy }}'+ ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    autoFilter: true,
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'List of Preschoolers in Barangay ' +'{{ brgy }}'+ ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    messageTop: getMessageTopT2(),    
+                    customize: function(doc){
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        var result = {
+                            total: 0,
+                            withRecord: 0,
+                            withoutRecord: 0,
+                            wasted: 0,
+                            severe: 0,
+                            overweight: 0,
+                            normal: 0,
+                            obese: 0,
+                            male: 0,
+                            female: 0,
+                            inco: 0,
+                            comp: 0,
+                            no: 0,
+                        };
+
+                        var tableLength = doc.content[2].table.body.length;
+                        result.total = tableLength - 1;
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][5].text;
+                                if (val == 'Male'){
+                                    doc.content[2].table.body[i+1][5].color = '#1aabbb';
+                                    result.male++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][5].color = '#e93fca';
+                                    result.female++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][11].text;
+                                if (val == 'Complete'){
+                                    doc.content[2].table.body[i+1][11].color = '#28a745';
+                                    result.comp++;
+                                }
+                                else if (val == 'No Record'){
+                                    doc.content[2].table.body[i+1][11].color = '#dc3545';
+                                    result.no++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][11].color = '#ffc107';
+                                    result.inco++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][8].text;
+                                var WFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WFA == 0){
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#d3d3d3';
+                                }
+                                else if (WFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#f26221';
+                                }
+                                else if (WFA >= -2.0 && WFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#00a54f';
+                                }
+                                else if (WFA >= -3.0 && WFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][9].text;
+                                var HFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (HFA == 0){
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#d3d3d3';
+                                }
+                                else if (HFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA  >= -2.0 && HFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA >= -3.0 && HFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][10].text;
+                                var WHFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WHFA == 0){
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#d3d3d3';
+                                    result.withoutRecord++;
+                                }
+                                else if (WHFA > 3.0) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.obese++;
+                                }
+                                else if (WHFA > 2.0 && WHFA <= 3.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.overweight++;
+                                }
+                                else if (WHFA >= -2.0 && WHFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#00A54F';
+                                    result.withRecord++;
+                                    result.normal++;
+                                }
+                                else if (WHFA >= -3.0 && WHFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#FFF102';
+                                    result.withRecord++;
+                                    result.wasted++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#EE1D23';
+                                    result.withRecord++;
+                                    result.severe++;
+                                }
+                            } catch(ee) { }
+                        };
+                        doc.defaultStyle.fontSize = 12; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 12; //2, 3, 4, etc
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.content[2].table.widths = [ '2%', '10%',  '8%', '10%', '5%', '5%', '10%', '10%','10%','10%','10%','10%',];
+                        doc.content[1].text = getMessageTopT2(result);
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+            'bSortable': false,
+            'aTargets': ['nosort'],
+            'orderable': false,
+            'targets': [0],
+        }],
+        order: [[1, 'asc']],
+        });
+        t2.on('order.dt search.dt', function () {
+        let i = 1;
+        t2.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+            this.data(i++);
+        });}).draw();
+</script>
+<script src="{% static '/Javascript/js/functions.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+{% endblock %}

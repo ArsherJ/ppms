@@ -1,0 +1,914 @@
+
+{% load static %} 
+{% block dashboard %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- table layout -->
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+
+    <script src="{% static '/Javascript/js/Chart.min.js' %}" crossorigin="anonymous"></script>
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/y-icon">
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/datatables.min.css' %}">
+    <script src="{% static '/CSS/DataTables/datatables.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/Buttons-1.7.1/css/buttons.bootstrap5.css' %}">
+    <script src="{% static '/CSS/DataTables/Buttons-1.7.1/js/buttons.bootstrap5.js' %}"></script>
+
+<title>PPMS | Immunization Status</title>
+</head>
+<body>
+
+<header>
+    <div class="site-header">
+    <nav class="navbar fixed-top index__navbar scrolled border-bottom" 
+    style=" padding-left:3%; padding-right:3%;">
+        <div class="flex-fill p-1 py-1">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="#" class="name" style="text-decoration: none;">
+                        <img class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="hidetitle" class="brand__name" style="color:rgb(3, 3, 3); margin-left:10px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <div id="navLinks">
+                    <ul class="nav text-small">
+                        <li>
+                            {% if loggedin == 'BHW' %}
+                                <a href="{% url 'preschooler_profile' preschooler.id %}"  style="border-radius: 13%;background-color: white;"class="nav-link" data-toggle="tooltip" data-bs-placement="left" data-bs-offset="0,7" 
+                                title="Go back to Preschooler Profile">
+                                <button class="back-button bg-white">
+                                    <span class="circle" aria-hidden="true">
+                                    <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="button-text d-flex align-items-center justify-content-center">Back</span>
+                                </button>  
+                                </a>
+                            {% else %}
+                                <a href="{% url 'parent_preschooler' preschooler.id %}"  style="border-radius: 13%;background-color: white;"class="nav-link" data-toggle="tooltip" data-bs-placement="left" data-bs-offset="0,7" 
+                                title="Go back to Preschooler Profile">
+                                <button class="back-button bg-white">
+                                    <span class="circle" aria-hidden="true">
+                                    <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="button-text d-flex align-items-center justify-content-center">Back</span>
+                                </button>  
+                                </a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </div>
+</header>
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('[data-toggle="tooltip"]').addClass('animated fade');
+       $('[data-toggle="tooltip"]').tooltip({
+        trigger : 'hover'})  
+   })
+</script>
+
+<!-- Dashboard -->
+<div class="" id="secondNav">
+    <div class="row align-items-center"> 
+        <div class="col-xl-8 col-md-6 col-12 text-md-start text-center d-flex align-items-center justify-content-md-start justify-content-center">
+            {% if preschooler.suffix_name is None %}
+                <h5 class="m-0 align-items-center text-capitalize">{{ preschooler.last_name }}, {{ preschooler.first_name }} {{ preschooler.middle_name }}'s Immunization</h5>
+            {% else %}
+                <h5 class="m-0 align-items-center text-capitalize">{{ preschooler.last_name }}, {{ preschooler.first_name }} {{ preschooler.middle_name }} {{ preschooler.suffix_name }}'s Immunization</h5>
+            {% endif %}
+        </div>
+        <div class="col-xl-4 col-md-6 col-12">
+            <div class="row d-flex justify-content-center align-items-stretch">
+                <div class=" d-flex justify-content-md-end justify-content-center align-items-stretch gap-2">
+                    {% if loggedin == 'BHW' %}
+                        <button style="background-color: #188045; color: white;" type="button" class="btn hoverableButton" data-bs-toggle="modal" data-bs-target="#guide" ><span class="fas fa-table"></span> Guide</button>
+                        <button style="background-color: #188045; color: white;" type="button" class="btn hoverableButton" data-bs-toggle="modal" data-bs-target="#update" ><span class="far fa-calendar"></span> Update</button>
+                    {% else %}
+                        <button style="background-color: #188045; color: white;" type="button" class="btn hoverableButton" data-bs-toggle="modal" data-bs-target="#guide"><span class="fas fa-table"></span> Guide</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="grid" class="container-fluid" style="padding:3%; margin: top 65px;">
+    <div class="container-grid py-4">
+    </div>
+
+
+<!--------------------- DataTables --------------------->
+<!--        Card/Table for Immunization Status       -->
+    <div class="row">
+        <div class="col p-2 mt-2">
+            <div class="card-header">
+                <h4> Required Immunization Status </h4>
+            </div>
+            <div class="card shadow-lg p-3 bg-white rounded" >
+                <div class="py-1">
+                    <div class="row d-flex justify-content-start align-items-center mb-2 text-uppercase">
+                        {% if preschooler.suffix_name is None %}
+                        <h5>Name: {{ preschooler.last_name }}, {{ preschooler.first_name }}  {{ preschooler.middle_name }} </h5>
+                        {% else %}
+                        <h5>Name: {{ preschooler.last_name }}, {{ preschooler.first_name }}  {{ preschooler.middle_name }} {{ preschooler.suffix_name }}</h5>
+                        {% endif %} 
+                    </div>
+                    <div class="row d-flex justify-content-start align-items-center text-uppercase">
+                        {% if preschooler.age_hours < 48 %}
+                        <h5>Age: {{ preschooler.age_days }} Day Old </h5>
+                        {% elif preschooler.age_days > 1 and preschooler.age_weeks < 1 %}
+                        <h5>Age: {{ preschooler.age_days }} Days Old </h5>
+                        {% elif preschooler.age_days > 7 and preschooler.age_months < 1 %}
+                        <h5>Age: {{ preschooler.age_weeks }} Weeks Old ({{ preschooler.age_days }} days)</h5>
+                        {% elif preschooler.age_months >= 1 and preschooler.age_months < 2 %}
+                        <h5>Age: {{ preschooler.age_months }} Month Old ({{ preschooler.age_weeks }} weeks) </h5>
+                        {% elif preschooler.age_months >= 2 and preschooler.age_years < 1 %}
+                        <h5>Age: {{ preschooler.age_months }} Months Old ({{ preschooler.age_weeks }} weeks) </h5>
+                        {% elif preschooler.age_years >= 1 and preschooler.age_years < 2 %}
+                        <h5>Age: {{ preschooler.age_years }} Year Old ({{ preschooler.age_months }} months) </h5>
+                        {% elif preschooler.age_years >= 2 and preschooler.age_years <= 5 %}
+                        <h5>Age: {{ preschooler.age_years }} Years Old ({{ preschooler.age_months }} months) </h5>
+                        {% endif %}
+                    </div>
+                    <hr>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-cell-border" id="table_validation">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">Age</th>
+                                <th scope="col" class="text-center">Number of Required Vaccine</th>
+                                <th scope="col" class="text-center">Number of Taken Vaccine</th>
+                                <th scope="col" class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                        <td class="text-center">24 hours</td>
+                                        <td class="text-center">2</td>
+                                        {% if vax_24hrs == 2 %}
+                                            <td class="text-center">2</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+                                        {% elif vax_24hrs == 0 %}
+                                            <td class="text-center text-danger">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+                                        {% else %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+                                        {% endif %}
+                                </tr>
+                                <tr>
+                                        <td class="text-center">6 weeks</td>
+                                        <td class="text-center">3</td>
+                                        {% if vax_6weeks >= 3 %}
+                                            <td class="text-center">3</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+                                        {% elif vax_6weeks == 2 %}
+                                            <td class="text-center">2</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+                                        {% elif vax_6weeks == 1 %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+                                        {% else %}
+                                            <td class="text-center text-danger ">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+                                        {% endif %}
+                                        
+                                </tr>
+                                <tr>
+                                        <td class="text-center">10 weeks</td>
+                                        <td class="text-center">3</td>
+
+                                        {% if vax_10weeks == 4 %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+
+                                        {% elif vax_10weeks == 5 %}
+                                            <td class="text-center">2</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+                                            
+                                        {% elif vax_10weeks <= 3 %}
+                                            <td class="text-center text-danger">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+
+                                        {% elif vax_10weeks >= 6 %} 
+                                            <td class="text-center">3</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+            
+                                        {% endif %}
+                                        
+                                </tr>
+                                <tr>
+                                        <td class="text-center">14 weeks</td>
+                                        <td class="text-center">4</td>
+
+                                        {% if vax_14weeks == 10 %}
+                                            <td class="text-center">4</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+
+                                        {% elif vax_14weeks == 9 %}
+                                            <td class="text-center">3</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+
+                                        {% elif vax_14weeks == 8 %}
+                                            <td class="text-center">2</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+
+                                        {% elif vax_14weeks == 7 %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-warning fw-bold">On Going</td>
+
+                                        {% elif vax_14weeks <= 6 %}
+                                            <td class="text-center text-danger">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+
+                                        {% endif %}
+                                </tr>
+                                <tr>
+                                        <td class="text-center">9 months</td>
+                                        <td class="text-center">1</td>
+                                        {% if vax_9months >= 1 %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+                                        {% else %}
+                                            <td class="text-center text-danger">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+                                        {% endif %}
+                                </tr>
+                                <tr>
+                                        <td class="text-center">12-15 months</td>
+                                        <td class="text-center">1</td>
+                                        {% if vax_9months == 2 %}
+                                            <td class="text-center">1</td>
+                                            <td class="text-center text-success fw-bold">Complete</td>
+                                        {% else %}
+                                            <td class="text-center text-danger">0</td>
+                                            <td class="text-center text-danger fw-bold">No Record</td>
+                                        {% endif %}
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Card for Immunization Schedule Record -->
+    <div class="text-dark">
+        <div class="row">
+            <div class="col p-2">
+                <div class="card-header">
+                    <h4> Immunization Schedule Record</h4>
+                </div>
+                <div class="card shadow-lg p-3 bg-white rounded" >
+                    <div class="table-responsive">
+                        <table class="table table-hover table-cell-border" id="Immu_sched_rec">
+                            <div class="" >
+                                <h5 style="font-size:20px; font-weight:bold; margin-right:10px; margin: 0;">Remaining Vaccine:</h5>
+                                {% if 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list and 'Pentavalent Vaccine' in vax_list and 'Measles Containing Vaccines' in vax_list and 'Inactivated Polio Vaccine' in vax_list and 'Measles Mumps - Rubella' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;"> No remaining vaccines.</h5>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list and 'Pentavalent Vaccine' in vax_list and 'Measles Containing Vaccines' in vax_list and 'Inactivated Polio Vaccine' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Measles Mumps - Rubella </h5>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list and 'Pentavalent Vaccine' in vax_list and 'Measles Containing Vaccines' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Inactivated Polio Vaccine and Measles Mumps - Rubella </p>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list and 'Pentavalent Vaccine' in vax_list and 'Measles Containing Vaccines' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Tetanus Toxoid, Inactivated Polio Vaccine, and Measles Mumps - Rubella </p>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list and 'Pentavalent Vaccine' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Measles Containing Vaccines, Inactivated Polio Vaccine, and Measles Mumps - Rubella </h5>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list and 'Oral Poliovirus Vaccine' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Pentavalent Vaccine, Measles Containing Vaccines, Inactivated Polio Vaccine, and Measles Mumps - Rubella </h5>
+                                {% elif 'BCG' in vax_list and 'Hepatitis B' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Oral Poliovirus Vaccine, Pentavalent Vaccine, Measles Containing Vaccines, Inactivated Polio Vaccine, and Measles Mumps - Rubella </h5>
+                                {% elif 'BCG' in vax_list %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">Hepatitis B, Oral Poliovirus Vaccine, Pentavalent Vaccine, Measles Containing Vaccines, Inactivated Polio Vaccine, and Measles Mumps - Rubella </h5>
+                                {% else %}
+                                    <h5 class="text-dark mb-0" style="font-size: 20px;">BCG, Hepatitis B, Oral Poliovirus Vaccine, Pentavalent Vaccine, Measles Containing Vaccines, Inactivated Polio Vaccine, and Measles Mumps - Rubella </p>
+                                {% endif %}
+                                
+                            </div>
+                            <br>
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">Vaccine</th>
+                                    <th scope="col" class="text-center">Doses</th>
+                                    <th scope="col" class="text-center">Required Doses</th>
+                                    <th scope="col" class="text-center">Immunization Date</th>
+                                    <th scope="col" class="text-center">Next Vaccine Date</th>
+                                </tr>
+                            </thead>
+                            {% for vaccine in vaccines %}
+                            <tbody>
+                                <tr>
+                                    {% if vaccine.vax_name == 'Oral Poliovirus Vaccine' or vaccine.vax_name == 'Pentavalent Vaccine' or vaccine.vax_name == 'Measles Containing Vaccines' %}
+                                        <td class="text-center">{{ vaccine.vax_name }}</td>
+                                        <td class="text-center">{{ vaccine.vax_dose }}</td>
+                                        <td class="text-center">3</td>
+                                        <td class="text-center">{{ vaccine.vax_date }}</td>
+                                        <td class="text-center">{{ vaccine.vax_remarks }}</td>
+                                    {% elif vaccine.vax_name == 'Inactivated Polio Vaccine' or vaccine.vax_name == 'Measles Mumps - Rubella' %}
+                                        <td class="text-center">{{ vaccine.vax_name }}</td>
+                                        <td class="text-center">{{ vaccine.vax_dose }}</td>
+                                        <td class="text-center">2</td>
+                                        <td class="text-center">{{ vaccine.vax_date }}</td>
+                                        <td class="text-center">{{ vaccine.vax_remarks }}</td>
+                                    {% else %}
+                                        <td class="text-center">{{ vaccine.vax_name }}</td>
+                                        <td class="text-center">{{ vaccine.vax_dose }}</td>
+                                        <td class="text-center">1</td>
+                                        <td class="text-center">{{ vaccine.vax_date }}</td>
+                                        <td class="text-center">{{ vaccine.vax_remarks }}</td>
+                                    {% endif %}
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--        Modal for Immunization Guide             -->
+        <div class="modal fade" id="guide" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header text-center d-flex justify-content-between">
+                        <div class=" d-flex justify-content-center align-items-center">
+                            <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/nncLogo.png' %}"><h5 class="modal-title" id="exampleModalLabel"> Immunization Guide</h5>
+                        </div>
+                        <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+
+                    </div>
+                    <div class="modal-body p-4">
+                        <div>
+                            <img class="img-fluid" src="{% static '/Media/vaxGuide.png' %}" alt="Responsive image" >
+                        </div>
+                        <div class="my-4 d-flex justify-content-center">
+                            <span>Reference: <a target="_blank" href="https://www.nnc.gov.ph/regional-offices/mindanao/region-xi-davao-region/5711-an-overview-of-philippine-s-routine-immunization-for-infants">
+                                NNC - An Overview of Philippine's Routine Immunization for Infants </a></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--    Modal for Immunization Update           -->
+        <div class="modal fade" id="update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <h5 class="modal-title fw-bold" id="exampleModalLabel"><i class="fas fa-syringe" style="color:#188045"></i> Immunization Update</h5>
+                        
+                    </div>
+                    <div class="modal-body mx-4">
+                        <form method="POST">
+                            {% csrf_token %}
+                        <!-- <form method="POST" onsubmit="get_cred($('#type').val());"> -->
+                            <div class="md-form mb-2">
+                                <label id="user-lbl" data-error="wrong" data-success="right">Vaccine: </label>
+                                <select required class="form-select" name="vax_name" aria-label="Default select example" onchange="changeNum(this)">
+                                    <option value="BCG">BCG</option>
+                                    <option value="Hepatitis B">Hepatitis B</option>
+                                    <option value="Pentavalent Vaccine">Pentavalent Vaccine</option>
+                                    <option value="Oral Poliovirus Vaccine">Oral Poliovirus Vaccine</option>
+                                    <option value="Inactivated Polio Vaccine">Inactivated Polio Vaccine</option>
+                                    <option value="Measles Containing Vaccines">Measles Containing Vaccines</option>
+                                    <option value="Measles Mumps - Rubella">Measles Mumps - Rubella</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="md-form mb-2" id="other_input" style="display: none;">
+                                <label id="user-lbl" data-error="wrong" data-success="right">Other Vaccines: </label>
+                                <input class="form-control" type="text" name="Others" id="Others">
+                            </div>
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col-md-6 md-form text-muted mb-2 text-md-center text-start" id="show_doses" style>
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Dose:</label>
+                                    <label id="dose" for="">1</label>
+                                </div>
+                                <div class="col-md-6 md-form mb-2 text-muted text-start" id="show_dose" style>
+                                    <label id="user-lbl" data-error="wrong" data-success="right">Required Doses:</label>    
+                                    <label id="required_dose" for="">1</label>
+                                </div>
+                            </div>
+                            <div class="md-form mb-2">
+                                <label id="user-lbl" data-error="wrong" data-success="right"  onchange="setNextDate()">Immunization Date:</label>
+                                <input required class="form-control" type="date" name="immune_date" id="immune_date" required>
+                            </div>
+                            <div class="md-form mb-2">
+                                <label id="user-lbl" data-error="wrong" data-success="right">Next Vaccine Date:</label>
+                                <input class="form-control" type="date" name="remarks" id="remarks" required>
+                            </div>
+                        
+                    </div>
+                    <div class="modal-footer d-flex justify-content-end">
+                        <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; min-width: 10%;" data-bs-dismiss="modal" aria-label="Close"> Cancel</button>
+                        <button type="submit" class="btn hoverableButton" style="background-color: #188045; color: white;  min-width: 10%;">Add</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+</div>
+{% if loggedin == 'BHW' %}
+<!-- USER MANUAL / HELP-->
+<input type="checkbox" id="helpCheckBox">
+<label class="help-container"  for="helpCheckBox" >
+    <label class="button helpIconButton hoverableButton" for="helpCheckBox">
+    <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+    </label>
+    <ul class="helpOptions">
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ1">How can I update Immunization status of Preschoolers?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ2">How can I change Preschooler's Image?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ3">How can I update Preschooler's Records?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ4">How can I Export Nutritional Status?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ5">How can I Filter Data on Tables/Exports?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ6">How can I change Password?</span>
+        </li>
+    </ul>
+</label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-start">
+            <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateVax.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-start">
+            <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateImage.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-start">
+            <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateRecords.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-start">
+            <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwExport.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q5 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-start">
+                <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/filterTable.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q6 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-start">
+                <img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwChangePassword.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+{% else %}
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+<input type="checkbox" id="helpCheckBox">
+<label class="help-container"  for="helpCheckBox" >
+    <label class="button helpIconButton hoverableButton" for="helpCheckBox" data-toggle="tooltip" data-bs-placement="left" data-bs-offset="0,7"
+    title="Help">
+    <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+    </label>
+    <ul class="helpOptions">
+        <li>
+        <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ1">How to view my Preschooler's Immunization Status?</span>
+        </li>
+        <li>
+        <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ2">How to view my Preschooler's Nutritional Status?</span>
+        </li>
+        <li>
+        <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ3">How can I enroll a Preschooler?</span>
+        </li>
+        <li>
+        <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#parentQ4">How can I change Password?</span>
+        </li>
+        </ul>
+</label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentViewNutrition.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentViewVax.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentEnroll.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="parentQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/parentChangePassword.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+{% endif %}
+<!-- Footer -->
+<div class="footer text-muted">
+    <div class="container">
+        <div class="row text-center d-flex align-items-center">
+                <div class="border-top p-2 d-flex justify-content-center align-items-center">
+                    <p class="copyright"><small>
+                    Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                    </small>
+                    </p>
+                </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById("immune_date").max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    
+    $(function(){
+        var dtToday = new Date();
+        
+        var month = dtToday.getMonth() + 1;
+        var day = dtToday.getDate();
+        var year = dtToday.getFullYear();
+        if(month < 10)
+            month = '0' + month.toString();
+        if(day < 10)
+            day = '0' + day.toString();
+        
+        var maxDate = year + '-' + month + '-' + day;
+
+        $('#remarks').attr('min', maxDate);
+    });
+
+    function changeNum (vax_name) {
+        if(vax_name.value === "BCG" || vax_name.value === "Hepatitis B" || vax_name.value === "Inactivated Polio Vaccine" ){
+            document.getElementById('dose').setAttribute('max', 1);
+            document.getElementById("required_dose").innerHTML = 1;
+            document.getElementById("other_input").setAttribute("style", "display: none;");
+            document.getElementById("show_doses").removeAttribute("style");
+            document.getElementById("show_dose").removeAttribute("style");
+            document.getElementById("immune_date").focus();
+        }
+        else if (vax_name.value === "Oral Poliovirus Vaccine") {
+            document.getElementById('dose').setAttribute('max', 3);
+            document.getElementById("dose").value = "{{ dose_list.2 }}";
+            document.getElementById("required_dose").innerHTML = 3;
+            document.getElementById("other_input").setAttribute("style", "display: none;");
+            document.getElementById("show_doses").removeAttribute("style");
+            document.getElementById("show_dose").removeAttribute("style");
+            document.getElementById("immune_date").focus();
+
+        } else if (vax_name.value === "Pentavalent Vaccine") {
+            document.getElementById('dose').setAttribute('max', 3);
+            document.getElementById("dose").value = "{{ dose_list.3 }}";
+            document.getElementById("required_dose").innerHTML = 3;
+            document.getElementById("other_input").setAttribute("style", "display: none;");
+            document.getElementById("show_doses").removeAttribute("style");
+            document.getElementById("show_dose").removeAttribute("style");
+            document.getElementById("immune_date").focus();
+
+        } else if (vax_name.value === "Measles Containing Vaccines") {
+            document.getElementById('dose').setAttribute('max', 3);
+            document.getElementById("dose").value = "{{ dose_list.4 }}";
+            document.getElementById("required_dose").innerHTML = 3;
+            document.getElementById("other_input").setAttribute("style", "display: none;");
+            document.getElementById("show_doses").removeAttribute("style");
+            document.getElementById("show_dose").removeAttribute("style");
+            document.getElementById("immune_date").focus();
+            
+        } else if (vax_name.value === "Measles Mumps - Rubella") {
+            document.getElementById('dose').setAttribute('max', 2);
+            document.getElementById("dose").value = 1;
+            document.getElementById("required_dose").innerHTML = 2;
+            document.getElementById("other_input").setAttribute("style", "display: none;");
+            document.getElementById("show_doses").removeAttribute("style");
+            document.getElementById("show_dose").removeAttribute("style");
+            document.getElementById("immune_date").focus();
+        }
+        else if (vax_name.value === "Others") {
+            document.getElementById("other_input").removeAttribute("style")
+            document.getElementById("show_doses").setAttribute("style",  "display: none;");
+            document.getElementById("show_dose").setAttribute("style",  "display: none;");
+            document.getElementById("Others").focus();
+        }
+    };
+    
+</script>
+<script>
+    var t1 = $('#table_validation').DataTable({
+        dom: 'B',
+        buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'portrait',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'Immunization Status ' + '| ' + '{{current_date}}',
+                    messageTop: 'Preschooler Name: {{ preschooler.last_name }} {{ preschooler.first_name }}  {{ preschooler.middle_name }} {{ preschooler.suffix_name }}' + '{{preschooler_60monthsList}}' +
+                    '                                                                                                                                                      ' + 
+                    'Age: '+ '{{ preschooler.age_years }} Years Old ({{ preschooler.age_months }} months) ({{ preschooler.age_weeks }} weeks)',
+                    customize: function(doc){
+
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        var tableLength = doc.content[2].table.body.length;
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][3].text;
+                                if (val == 'Complete'){
+                                    doc.content[2].table.body[i+1][3].color = '#28a745';
+                                }
+                                else if (val == 'No Record'){
+                                    doc.content[2].table.body[i+1][3].color = '#dc3545';
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][3].color = '#ffc107';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        doc.defaultStyle.fontSize = 10; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 10; //2, 3, 4, etc
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.content[1].alignment = 'left';
+                        doc.content[2].alignment = 'center';
+                        doc.content[2].table.widths = [ '25%', '25%',  '25%', '25%'];
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+        'bSortable': false,
+        'aTargets': ['nosort'],
+        'orderable': false,
+        'targets': [0, 1, 2, 3],
+        }],
+        order: [],
+        });
+</script>
+
+<script>
+    var t2 = $('#Immu_sched_rec').DataTable({
+        dom: 'B',
+        buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'portrait',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'Immunization Schedule Records ' + '| ' + '{{current_date}}',
+                    messageTop: 'Preschooler Name: {{ preschooler.last_name }} {{ preschooler.first_name }}  {{ preschooler.middle_name }} {{ preschooler.suffix_name }}' + '{{preschooler_60monthsList}}' +
+                    '                                                                                                                                                      ' + 
+                    'Age: '+ '{{ preschooler.age_years }} Years Old ({{ preschooler.age_months }} months) ({{ preschooler.age_weeks }} weeks)',
+                    customize: function(doc){
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        doc.defaultStyle.fontSize = 10; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 10; //2, 3, 4, etc
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.content[1].alignment = 'left';
+                        doc.content[2].alignment = 'center';
+                        doc.content[2].table.widths = [ '20%', '20%', '20%',  '20%', '20%'];
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+        'bSortable': false,
+        'aTargets': ['nosort'],
+        'orderable': false,
+        'targets': [0, 1, 2, 3, 4],
+        }],
+        order: [],
+        });
+</script>
+<script src="{% static '/Javascript/js/functions.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="{% static '/Javascript/testscript.js' %}"></script>
+
+
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+            <script>
+                Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Vaccine',
+                text: '{{message}}',
+                confirmButtonText: "Ok",
+                confirmButtonColor: '#EF3A25',
+            });
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% endblock %}

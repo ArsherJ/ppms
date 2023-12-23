@@ -1,0 +1,932 @@
+{% load static %}
+{% block dashboard %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- table layout -->
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+
+    <script src="{% static '/Javascript/js/Chart.min.js' %}" crossorigin="anonymous"></script>
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/y-icon">
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/datatables.min.css' %}">
+    <script src="{% static '/CSS/DataTables/datatables.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/Buttons-1.7.1/css/buttons.bootstrap5.css' %}">
+    <script src="{% static '/CSS/DataTables/Buttons-1.7.1/js/buttons.bootstrap5.js' %}"></script>
+
+
+<title>PPMS | Preschooler Dashboard</title>
+</head>
+<body>
+
+<header>
+    <div class="site-header">
+    <nav class="navbar fixed-top index__navbar scrolled border-bottom" 
+    style=" padding-left:3%; padding-right:3%;">
+        <div class="flex-fill p-1 py-1">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="#" class="name" style="text-decoration: none;">
+                        <img class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="hidetitle" class="brand__name" style="color:rgb(3, 3, 3); margin-left:10px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <div id="navLinks">
+                    <ul class="nav text-small">
+                        <li>
+                            <a href="{% url 'bhw_home' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7" 
+                            title="Home">
+                            <i class="fa fa-fw fa-home" style="font-size: 24px;"></i>   
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'preschooler_dashboard' %}" class="nav-link" style="color:rgb(27, 177, 92) !important;" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Preschooler List">
+                            <i class="fa fa-fw fa-id-card " style="font-size: 24px;"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="btn nav-link" id="dropdownUser1" data-bs-toggle="dropdown" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Settings" aria-expanded="false">
+                                <i class="fa fa-fw fa-user-cog bi" style="font-size: 24px;"></i>
+                                <span class="position-absolute top-100 start-75 translate-middle badge rounded-pill text-dark" style="border-radius: 50%;">
+                                    <i class="fa fa-lg fa-fw fa-caret-down bg-light" style="border-radius: 25%; margin-bottom: 15px;"></i>
+                                </span></a>
+                                
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2" style="margin-right:3%;" aria-labelledby="dropdownUser1">
+                                
+                                <div class="text-dark d-block justify-content-start p-2"style="text-decoration: none; background-color: rgba(255,255,255,0); padding: 0 !important;">
+                                    <div class="card p-3 d-flex align-items-center justify-content-center">
+                                        <div class="row d-block">
+                                            <div class="d-flex justify-content-center my-2">
+                                                <i class="fa fa-lg fa-fw fa-user bi" style="margin-left:5px ;"></i>  
+                                            </div>
+                                             <div class="d-flex justify-content-center text-center p-2">  
+                                                <span style="font-size: 15px;"> {{ user.first_name }} {{ user.last_name }} </span>
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <a class="card-footer d-flex align-items-center justify-content-center" style="height:30px; background-color:none !important; border-radius: 0px !important;margin:0px !important;" href="{% url 'new_pass' user.id %}">
+                                        <p class="mt-3"style="font-size:15px;">View Profile</p>
+                                    </a>
+                                </div>
+                                <div>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" style="background-color: rgba(255, 255, 255, 0); padding: 2px !important; margin-left:7px;" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out-alt mx-1"></i>Sign out</a></li>
+                                </div>
+                                
+                            </ul>                             
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </div>
+</header>
+
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+    });
+</script>
+    
+
+<!-- Dashboard -->
+<div class="" id="secondNav">
+    <div class="row align-items-center"> 
+        <div class="col-6 d-flex text-md-start text-center text-uppercase align-items-center ">
+            <h5 class="m-0 align-items-center">List of Preschoolers</h5>
+        </div>
+        <div class="col-6 d-flex justify-content-md-end justify-content-center align-items-stretch">
+            <button class="btn hoverableButton"type="button" style="background-color: #188045; color: white;" data-bs-toggle="modal" data-bs-target="#modalArc"><h6 style="padding:5px;margin-bottom: 0px !important;"><i class="fa fa-archive"></i> Archive</h6></button>
+        </div>
+    </div>
+</div>
+<div id="grid" class="container-fluid" style="margin-top:85px;">
+<!-- DataTables -->
+<div class="container text-black">
+    <div class="row">
+        <div class="col">
+            <div class="card-header">
+                <h3>Preschooler's Nutritional Status</h3>
+            </div>
+            <div class="card shadow-lg p-3 bg-white rounded">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-cell-border" id="preschooler_bmi" >
+                        <thead>
+                            <tr style="text-align: center;">
+                                <th scope="col">No</th>
+                                <th scope="col">Full Name</th>
+                                <th scope="col">Birthdate</th>
+                                <th scope="col">Gender</th>
+                                <th scope="col">Age Last Measured (Month)</th>
+                                <th scope="col">WFA STATUS</th>
+                                <th scope="col">HFA STATUS</th>
+                                <th scope="col">WHFA STATUS</th>
+                                <th scope="col">Vaccine status</th>
+                                <th scope="col" class="nosort text-center">Action</th>
+                            </tr>   
+                        </thead>
+                        <tbody>
+                            {% for preschooler in preschoolers %}
+                            <tr style="text-align: center;">
+                                <td></td>
+                                {% if preschooler.suffix_name is None or preschooler.suffix_name == ''  %}
+                                    <td class="text-capitalize">{{ preschooler.last_name }}, {{ preschooler.first_name }} {{ preschooler.middle_name }}</td>
+                                {% else %}
+                                    <td class="text-capitalize">{{ preschooler.last_name }}, {{ preschooler.first_name }} {{ preschooler.middle_name }} {{ preschooler.suffix_name }}</td>
+                                {% endif %}
+                                <td>{{ preschooler.birthday }}</td>
+                                {% if preschooler.gender == 'Male' %}
+                                    <td class="text-uppercase textShadow" style="color:rgb(26, 171, 187)">{{ preschooler.gender }}</td>
+                                {% else %}
+                                    <td class="text-uppercase textShadow" style="color:rgb(233, 63, 202)">{{ preschooler.gender }}</td>
+                                {% endif %}
+                                {% if preschooler.age_measured == 'Undefined' %}
+                                    <td>No Measuring Record</td>
+                                {% else %}
+                                    <td>{{ preschooler.age_measured }} Months</td>
+                                {% endif %}
+
+                                {% if preschooler.wfa is None %}
+                                    <td class="fw-bold " style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                {% elif preschooler.wfa > 2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.wfa }})</td>
+                                {% elif preschooler.wfa >= -2.0 and preschooler.wfa <= 2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.wfa }})</td>
+                                {% elif preschooler.wfa >= -3.0 and preschooler.wfa < -2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(255, 241, 2);"> Underweight ({{ preschooler.wfa }})</td>
+                                {% else %}
+                                    <td class="fw-bold " style="background-color: rgb(238, 29, 35);"> Severely Underweight ({{ preschooler.wfa }})</td>
+                                {% endif %}
+
+                                {% if preschooler.hfa is None %}
+                                    <td class="fw-bold" style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                {% elif preschooler.hfa > 2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(0, 165, 79);"> Tall ({{preschooler.hfa }})</td>
+                                {% elif preschooler.hfa >= -2.0 and preschooler.hfa <= 2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.hfa }})</td>
+                                {% elif preschooler.hfa >= -3.0 and preschooler.hfa < -2.0 %}
+                                    <td class="fw-bold " style="background-color: rgb(255, 241, 2);"> Stunted ({{ preschooler.hfa }})</td>
+                                {% else %}
+                                    <td class="fw-bold" style="background-color: rgb(238, 29, 35);"> Severely Stunted ({{ preschooler.hfa }})</td>
+                                {% endif %}
+
+                                {% if preschooler.whfa is None %}
+                                    {% if preschooler.height < 45.0 %}
+                                        <td class="bg-info fw-bold" > Special Case <p class="text text-small m-0"> (Too Small for WHFA Tagging) </p></td>
+                                    {% elif preschooler.height > 110.0 %}
+                                        <td class="bg-info fw-bold" > Special Case <p class="text text-small m-0"> (Too Tall for WHFA Tagging) </p></td>
+                                    {% else %}
+                                        <td class="fw-bold" style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                    {% endif %}
+
+                                {% elif preschooler.whfa > 3.0%}
+                                    <td class="fw-bold" style="background-color: rgb(242, 98, 33);"> Obese ({{ preschooler.whfa }})</td>
+                                {% elif preschooler.whfa > 2.0 and preschooler.whfa <= 3.0 %}
+                                    <td class="fw-bold" style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.whfa }})</td>
+                                {% elif preschooler.whfa >= -2.0 and preschooler.whfa <= 2.0 %}
+                                    <td class="fw-bold" style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.whfa}})</td>
+                                {% elif preschooler.whfa >= -3.0 and preschooler.whfa < -2.0 %}
+                                    <td class="fw-bold" style="background-color: rgb(255, 241, 2);"> Moderately Wasted ({{ preschooler.whfa }})</td>
+                                {% else %}
+                                    <td class="fw-bold" style="background-color: rgb(238, 29, 35);"> Severely Wasted ({{preschooler.whfa }})</td>
+                                {% endif %}
+                                
+                                {% if preschooler.vaccine_count == 8 %}
+                                    <td class=" text-success textShadow">Complete</td>
+                                {% elif preschooler.vaccine_count == 0 %}
+                                    <td class=" text-danger textShadow">No Record</td>
+                                {% else %}
+                                    <td class=" text-warning textShadow">Incomplete</td>
+                                {% endif %}
+                                
+                                <td style="text-align: center;">
+                                    <div>
+                                        <a href="{% url 'preschooler_profile' preschooler.id %}"><button type="button" style="background-color: #188045; color: white;" class="btn hoverableButton">View Profile</button></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalArc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center justify-content-between">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel"> <i class="fa fa-archive" style="color:#188045"></i> Preschooler Archive</h5>
+                    <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color:white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive " style="margin:30px;">
+                        <h5 class="text-center">List of preschooler who have an age older that 60 months.</h5>
+                        <table class="table table-hover table-cell-border" id="archive" >
+                            <thead>
+                                <tr style="text-align: center;">
+                                    <th scope="col">No</th>
+                                    <th scope="col">Last Name</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Middle Name</th>
+                                    <th scope="col">Suffix</th>
+                                    <th scope="col">Gender</th>
+                                    <th scope="col">Birthdate</th>
+                                    <th scope="col">Age Last Measured (Month)</th>
+                                    <th scope="col">WFA STATUS</th>
+                                    <th scope="col">HFA STATUS</th>
+                                    <th scope="col">WHFA STATUS</th>
+                                    <th scope="col">Vaccine status</th>
+                                </tr>   
+                            </thead>
+                            <tbody>
+                                {% for preschooler in archive_preschoolers %}
+                                <tr style="text-align: center;">
+                                    <td></td>
+                                    <td>{{ preschooler.last_name }}</td>
+                                    <td>{{ preschooler.first_name }}</td>
+                                    <td>{{ preschooler.middle_name }}</td>
+                                    <td>{{ preschooler.suffix_name }}</td>
+                                    {% if preschooler.gender == 'Male' %}
+                                        <td class="text-uppercase textShadow" style="color:rgb(26, 171, 187)">{{ preschooler.gender }}</td>
+                                    {% else %}
+                                        <td class="text-uppercase textShadow" style="color:rgb(233, 63, 202)">{{ preschooler.gender }}</td>
+                                    {% endif %}
+                                    <td>{{ preschooler.birthday }}</td>
+                                    {% if preschooler.age_measured == 'Undefined' %}
+                                        <td>No Measuring Record</td>
+                                    {% else %}
+                                        <td>{{ preschooler.age_measured }} Months</td>
+                                    {% endif %}
+
+                                    {% if preschooler.wfa is None %}
+                                        <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                    {% elif preschooler.wfa > 2.0 %}
+                                        <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.wfa }})</td>
+                                    {% elif preschooler.wfa >= -2.0 and preschooler.wfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.wfa }})</td>
+                                    {% elif preschooler.wfa >= -3.0 and preschooler.wfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Underweight ({{ preschooler.wfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Underweight ({{ preschooler.wfa }})</td>
+                                    {% endif %}
+
+                                    {% if preschooler.hfa is None %}
+                                        <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                    {% elif preschooler.hfa > 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Tall ({{preschooler.hfa }})</td>
+                                    {% elif preschooler.hfa >= -2.0 and preschooler.hfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.hfa }})</td>
+                                    {% elif preschooler.hfa >= -3.0 and preschooler.hfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Stunted ({{ preschooler.hfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Stunted ({{ preschooler.hfa }})</td>
+                                    {% endif %}
+
+
+                                    {% if preschooler.whfa is None %}
+                                        {% if preschooler.height < 45.0 %}
+                                            <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Small for WHFA Tagging) </p></td>
+                                        {% elif preschooler.height > 110.0 %}
+                                            <td class="bg-info" > Special Case <p class="text text-small m-0"> (Too Tall for WHFA Tagging) </p></td>
+                                        {% else %}
+                                            <td style="background-color: rgb(211, 211, 211);"> No Data Record </td>
+                                        {% endif %}
+
+                                    {% elif preschooler.whfa > 3.0%}
+                                        <td style="background-color: rgb(242, 98, 33);"> Obese ({{ preschooler.whfa }})</td>
+                                    {% elif preschooler.whfa > 2.0 and preschooler.whfa <= 3.0 %}
+                                        <td style="background-color: rgb(242, 98, 33);"> Overweight ({{ preschooler.whfa }})</td>
+                                    {% elif preschooler.whfa >= -2.0 and preschooler.whfa <= 2.0 %}
+                                        <td style="background-color: rgb(0, 165, 79);"> Normal ({{ preschooler.whfa}})</td>
+                                    {% elif preschooler.whfa >= -3.0 and preschooler.whfa < -2.0 %}
+                                        <td style="background-color: rgb(255, 241, 2);"> Moderately Wasted ({{ preschooler.whfa }})</td>
+                                    {% else %}
+                                        <td style="background-color: rgb(238, 29, 35);"> Severely Wasted ({{preschooler.whfa }})</td>
+                                    {% endif %}
+                                    
+                                    {% if preschooler.vaccine_count == 8 %}
+                                        <td class=" text-success textShadow">Complete</td>
+                                    {% elif preschooler.vaccine_count == 0 %}
+                                        <td class=" text-danger textShadow">No Record</td>
+                                    {% else %}
+                                        <td class=" text-warning textShadow">Incomplete</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                        <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white;min-width: 10%;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- USER MANUAL / HELP-->
+<input type="checkbox" id="helpCheckBox">
+<label class="help-container"  for="helpCheckBox" >
+    <label class="button helpIconButton hoverableButton" for="helpCheckBox">
+    <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+    </label>
+    <ul class="helpOptions">
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ1">How can I update Immunization status of Preschoolers?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ2">How can I change Preschooler's Image?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ3">How can I update Preschooler's Records?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ4">How can I Export Nutritional Status?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ5">How can I Filter Data on Tables/Exports?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ6">How can I change Password?</span>
+        </li>
+    </ul>
+</label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateVax.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateImage.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateRecords.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwExport.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q5 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/filterTable.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q6 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwChangePassword.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+<!-- Footer -->
+<div class="footer text-muted">
+    <div class="container">
+        <div class="row text-center d-flex align-items-center">
+                <div class="border-top p-2 d-flex justify-content-center align-items-center">
+                    <p class="copyright"><small>
+                    Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                    </small>
+                    </p>
+                </div>
+        </div>
+    </div>
+</div>
+        
+<script>
+    function getMessageTopT1(data = {}) {
+        return 'Number of Preschoolers: ' + data.total + '                                                                        '+
+        'Number of Preschoolers With Records: ' + data.withRecord + '                                   '+
+        'Number of Preschoolers Without Records: ' + data.withoutRecord + '                                   ' +
+        'Number of Complete Vaccine Record: ' + data.comp + '                                                    '+
+        'Number of Incomplete Vaccine Record: ' + data.inco + '                                  '+
+        'Number of No Vaccine Record: ' + data.no + '                                   ' +
+        'Number of Moderately Wasted Status: ' + data.wasted + '                                                   ' +
+        'Number of Severly Wasted Status: ' + data.severe + '                                            ' +
+        'Number of Overweight Status: ' + data.overweight + '                                                ' +
+        'Number of Normal Status: ' + data.normal + '                                                                         ' +
+        'Number of Obese Status: ' + data.obese + '                                                                                                                                                                                                   ' +
+        'Number of Male Preschoolers: ' + data.male + '                                                                 ' + 
+        'Number of Female Preschoolers: ' + data.female;
+    }
+    var t1 = $('#archive').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Generate Excel ',
+                    title: 'List of Preschoolers in Barangay ' + '{{bhw.bhw_barangay}}' + ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    autoFilter: true,
+
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'List of Preschoolers in Barangay ' + '{{bhw.bhw_barangay}}' + ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    messageTop: getMessageTopT1(),
+                    customize: function(doc){
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        var result = {
+                            total: 0,
+                            withRecord: 0,
+                            withoutRecord: 0,
+                            wasted: 0,
+                            severe: 0,
+                            overweight: 0,
+                            normal: 0,
+                            obese: 0,
+                            male: 0,
+                            female: 0,
+                            inco: 0,
+                            comp: 0,
+                            no: 0,
+                        };
+
+                        var tableLength = doc.content[2].table.body.length;
+                        result.total = tableLength - 1;
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][5].text;
+                                if (val == 'Male'){
+                                    doc.content[2].table.body[i+1][5].color = '#1aabbb';
+                                    result.male++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][5].color = '#e93fca';
+                                    result.female++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][11].text;
+                                if (val == 'Complete'){
+                                    doc.content[2].table.body[i+1][11].color = '#28a745';
+                                    result.comp++;
+                                }
+                                else if (val == 'No Record'){
+                                    doc.content[2].table.body[i+1][11].color = '#dc3545';
+                                    result.no++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][11].color = '#ffc107';
+                                    result.inco++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][8].text;
+                                var WFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WFA == 0){
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#d3d3d3';
+                                }
+                                else if (WFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#f26221';
+                                }
+                                else if (WFA >= -2.0 && WFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#00a54f';
+                                }
+                                else if (WFA >= -3.0 && WFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][8].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][9].text;
+                                var HFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (HFA == 0){
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#d3d3d3';
+                                }
+                                else if (HFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA  >= -2.0 && HFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#00a54f';
+                                }
+                                else if (HFA >= -3.0 && HFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][9].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][10].text;
+                                var WHFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WHFA == 0){
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#d3d3d3';
+                                    result.withoutRecord++;
+                                }
+                                else if (WHFA > 3.0) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.obese++;
+                                }
+                                else if (WHFA > 2.0 && WHFA <= 3.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.overweight++;
+                                }
+                                else if (WHFA >= -2.0 && WHFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#00A54F';
+                                    result.withRecord++;
+                                    result.normal++;
+                                }
+                                else if (WHFA >= -3.0 && WHFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#FFF102';
+                                    result.withRecord++;
+                                    result.wasted++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][10].fillColor = '#EE1D23';
+                                    result.withRecord++;
+                                    result.severe++;
+                                }
+                            } catch(ee) { }
+                        };
+                        doc.defaultStyle.fontSize = 12; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 12; //2, 3, 4, etc
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.content[1].text = getMessageTopT1(result);
+                        doc.content[2].table.widths = [ '2%', '10%',  '8%', '10%', '5%', '5%', '10%', '10%','10%','10%','10%','10%',];
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+            'bSortable': false,
+            'aTargets': ['nosort'],
+            'orderable': false,
+            'targets': [0],
+        }],
+        order: [[1, 'asc']],
+        });
+        t1.on('order.dt search.dt', function () {
+        let i = 1;
+        t1.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+            this.data(i++);
+        });}).draw();
+</script>
+<script>
+    function getMessageTopT2(data = {}) {
+        return 'Number of Preschoolers: ' + data.total + '                                                                           '+
+        'Number of Preschoolers With Records: ' + data.withRecord + '                                  '+
+        'Number of Preschoolers Without Records: ' + data.withoutRecord + '                                   ' +
+        'Number of Complete Vaccine Record: ' + data.comp + '                                                    '+
+        'Number of Incomplete Vaccine Record: ' + data.inco + '                                  '+
+        'Number of No Vaccine Record: ' + data.no + '                                   ' +
+        'Number of Moderately Wasted Status: ' + data.wasted + '                                                   ' +
+        'Number of Severly Wasted Status: ' + data.severe + '                                            ' +
+        'Number of Overweight Status: ' + data.overweight + '                                                ' +
+        'Number of Normal Status: ' + data.normal + '                                                                         ' +
+        'Number of Obese Status: ' + data.obese + '                                                                                                                                                                                                   ' +
+        'Number of Male Preschoolers: ' + data.male + '                                                                 ' + 
+        'Number of Female Preschoolers: ' + data.female;
+    }
+    var t2 = $('#preschooler_bmi').DataTable({
+        dom: 'Blfrtip',
+        buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Generate Excel ',
+                    title: 'List of Preschoolers in Barangay ' + '{{bhw.bhw_barangay}}' + ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    autoFilter: true,
+                },
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    download: 'open',
+                    text: 'Generate PDF ',
+                    title: 'List of Preschoolers in Barangay ' + '{{bhw.bhw_barangay}}' + ' | {{ user.first_name }} {{ user.last_name }} | ' + '{{current_date}}',
+                    messageTop: getMessageTopT2(),    
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8 ]},
+                    customize: function(doc){
+
+                        doc.styles.tableHeader = {
+                            bold: true,
+                            fontSize: 10,
+                            alignment: 'center'
+                        }
+                        
+
+                        var objLayout = {};
+                            objLayout['hLineWidth'] = function(i) { return .8; };
+                            objLayout['vLineWidth'] = function(i) { return .5; };
+                            objLayout['hLineColor'] = function(i) { return '#000000'; };
+                            objLayout['vLineColor'] = function(i) { return '#000000'; };
+                        doc.content[2].layout = objLayout;
+
+                        var result = {
+                            total: 0,
+                            withRecord: 0,
+                            withoutRecord: 0,
+                            wasted: 0,
+                            severe: 0,
+                            overweight: 0,
+                            normal: 0,
+                            obese: 0,
+                            male: 0,
+                            female: 0,
+                            inco: 0,
+                            comp: 0,
+                            no: 0,
+                        };
+
+                        var tableLength = doc.content[2].table.body.length;
+                        result.total = tableLength - 1;
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][3].text;
+                                if (val == 'Male'){
+                                    doc.content[2].table.body[i+1][3].color = '#1aabbb';
+                                    result.male++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][3].color = '#e93fca';
+                                    result.female++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i+1][8].text;
+                                if (val == 'Complete'){
+                                    doc.content[2].table.body[i+1][8].color = '#28a745';
+                                    result.comp++;
+                                }
+                                else if (val == 'No Record'){
+                                    doc.content[2].table.body[i+1][8].color = '#dc3545';
+                                    result.no++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i+1][8].color = '#ffc107';
+                                    result.inco++;
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][5].text;
+                                var WFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WFA == 0){
+                                    doc.content[2].table.body[i + 1][5].fillColor = '#d3d3d3';
+                                }
+                                else if (WFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][5].fillColor = '#f26221';
+                                }
+                                else if (WFA >= -2.0 && WFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][5].fillColor = '#00a54f';
+                                }
+                                else if (WFA >= -3.0 && WFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][5].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][5].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][6].text;
+                                var HFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (HFA == 0){
+                                    doc.content[2].table.body[i + 1][6].fillColor = '#d3d3d3';
+                                }
+                                else if (HFA > 2.0) {
+                                    doc.content[2].table.body[i + 1][6].fillColor = '#00a54f';
+                                }
+                                else if (HFA  >= -2.0 && HFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][6].fillColor = '#00a54f';
+                                }
+                                else if (HFA >= -3.0 && HFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][6].fillColor = '#fff102';
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][6].fillColor = '#EE1D23';
+                                }
+                            } catch(ee) { }
+                        };
+
+                        for (var i = 0; i < tableLength; i++){
+                            try {
+                                var val = doc.content[2].table.body[i + 1][7].text;
+                                var WHFA = parseFloat(Number(val.replace(/[^0-9\.-]+/g,"")));
+                                if (WHFA == 0){
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#d3d3d3';
+                                    result.withoutRecord++;
+                                }
+                                else if (WHFA > 3.0) {
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.obese++;
+                                }
+                                else if (WHFA > 2.0 && WHFA <= 3.0 ) {
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#f26221';
+                                    result.withRecord++;
+                                    result.overweight++;
+                                }
+                                else if (WHFA >= -2.0 && WHFA <= 2.0 ) {
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#00A54F';
+                                    result.withRecord++;
+                                    result.normal++;
+                                }
+                                else if (WHFA >= -3.0 && WHFA < -2.0 ) {
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#FFF102';
+                                    result.withRecord++;
+                                    result.wasted++;
+                                }
+                                else {
+                                    doc.content[2].table.body[i + 1][7].fillColor = '#EE1D23';
+                                    result.withRecord++;
+                                    result.severe++;
+                                }
+                            } catch(ee) { }
+                        };
+                        doc.defaultStyle.fontSize = 12; //2, 3, 4,etc
+                        doc.styles.tableHeader.fontSize = 12; //2, 3, 4, etc
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.styles.tableHeader.fillColor = '#eef9eb';
+                        doc.content[2].table.widths = [ '2%', '15%', '10%', '10%', '10%', '15%', '15%', '15%','10%',];
+                        doc.content[1].text = getMessageTopT2(result);
+
+                    }
+                },
+            ],
+        aoColumnDefs: [{
+            'bSortable': false,
+            'aTargets': ['nosort'],
+            'orderable': false,
+            'targets': [0],
+        }],
+        order: [[1, 'asc']],
+        });
+        t2.on('order.dt search.dt', function () {
+        let i = 1;
+        t2.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+            this.data(i++);
+        });}).draw();
+</script>
+
+<script src="{% static '/Javascript/js/functions.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</div>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,336 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/fstdropdown.js' %}"></script>
+    <script src="{% static '/Javascript/functions.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/CSS/css/fstdropdown.css' %}">
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/y-icon">
+    
+    <title>Preschoolers Profiling and Monitoring System</title>
+
+    <!-- Remove Phone num Spinner -->
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-spinner-appearance: textfield;
+        }
+    </style>
+    
+</head>
+
+
+
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+   })
+ </script>
+
+<body style="background: radial-gradient(100vw, white, #1880455e);">
+    <!-- Header -->
+    <div class="site-header" >
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark index__navbar scrolled">
+        <div class="container-fluid">
+            <div>
+                <img class="navbar-icon animateNavbarIcon" style="margin-left:15px;" src="../static/Media/avatar.png" alt="dasma-logo">
+                <span class="brand__name" style="color:#2c5f2dff; margin-left:10px;">City of Dasmariñas - PPMS</span>
+            </div>
+        </div>
+        </nav>
+    </div>
+    
+    <!-- Form -->
+    <div class="container-fluid" id="homeBody" style="padding-top:45px;" >
+        <div class="form shadow-lg" id="formHeight">
+            <div class="form-toggle"></div>
+            <div class="form-panel one d-flex justify-content-center flex-column">
+                <div class="form-header">
+                    <h1>Login</h1>
+                </div>
+                <div class="form-content">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="">Email</label>
+                            <input type="text" id="username" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Password</label>
+                            <input type="password" id="password1" name="password">
+                        </div>
+                        <div class="form-group d-flex justify-content-between mb-2">
+                            <label class="form-remember">
+                                <input type="checkbox" onclick="showPassword()">Show Password
+                        </div>
+                        <div class="form-group">
+                            <button class="hoverableButton" type="submit">Log In</button>
+                        </div>
+                        <hr>
+                        <div>
+                            <div class="row" style="padding:5px;">
+                                <div class="col-6 justify-content-sm-center justify-content-start text-sm-start text-center p-0">
+                                    <p style="font-size:medium;">Not registered?</p>
+                                </div>
+                                <div class="col-6 justify-content-sm-center justify-content-end text-sm-end text-center">
+                                    <a class="m-0" id="createAccountButton"onclick="openpaneltwo(event)">Create Account</a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="form-panel two">
+                <div class="form-header">
+                    <h1>Register Account</h1>
+                </div>
+                <div class="form-content">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="input-group mb-3" required>
+                            <label for="">User Type</label>
+                            {{ form.user_type }}
+                            <br>
+                        </div>
+
+                        <div class="input-group mb-3" required>
+                            <label for="">Barangay</label>
+                            {{ form.barangay }}
+                            <br>
+                        </div>
+                        <!-- Name -->
+                        <div class="form-group" required>
+                            <div class="row">
+                                <div class="col-sm-6 mb-1" style="margin-top: 1%;">
+                                    <label for="">First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-sm-6 mb-1" style="margin-top: 1%;">
+                                    <label for="">Middle Name</label>
+                                    {{ form.middle_name }}
+                                </div>
+                                <div class="col-sm-6 mb-1" style="margin-top: 1%;">
+                                    <label for="">Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="col-sm-6 mb-1"style="margin-top: 1%;">
+                                    <label for="">Suffix (Optional)</label>
+                                    {{ form.suffix_name }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="">Email Address</label>
+                            {{ form.email }}
+                        </div>
+                        <!-- Phone Number -->
+                        <div class="form-group">
+                            <label for="">Contact Number</label>
+                            {{ form.phone_num }}
+                        </div>
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="">Password</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="form-group d-flex justify-content-start align-items-center">
+                            <label class="form-remember">
+                                <input type="checkbox" onclick="showPassword2()">SHOW PASSWORD
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Confirm Password</label>
+                            {{ form.password2 }}
+                        </div>
+                        <div class="form-group d-flex justify-content-start align-items-center">
+                            <label class="form-remember text-light">
+                                <input type="checkbox" onclick="showPassword3()">SHOW PASSWORD
+                            </label>
+                        </div>
+                        <hr>
+                        <!-- EULA -->
+                        <div class="form-check d-flex justify-content-start text-ligh mb-3">
+                            <input class="form-check-input" type="checkbox" name="flexRadioDefault" id="flexRadioDefault1" required>
+                            <a href="{% url 'privacyPolicy' %}" target="_blank"type="button" id="eulaButton" class="btn border-0 text-light p-0 h6" for="flexRadioDefault1">    
+                                I have read the <u>Privacy Policy</u>
+                            </a>
+                        </div>
+                        <div class="form-group">
+                            <button name="register_btn" type="submit">Register</button>
+                        </div>
+                    </form>
+                </div>  
+            </div>
+        </div>
+        <!-- Spacing -->
+        <br><br><br><br><br>
+        <!-- Spacing -->
+    </div>
+    
+     <!-- USER MANUAL / HELP-->
+ <input type="checkbox" id="helpCheckBox">
+ <label class="help-container"  for="helpCheckBox" >
+     <label class="button helpIconButton hoverableButton" for="helpCheckBox" data-bs-toggle="modal" data-bs-target="#loginQ1">
+     <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+     </label>
+ </label>
+ 
+ <!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+ 
+ <!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+ 
+ <div class="modal fade" id="loginQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-xl">
+     <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+         <div class="modal-body" style="padding:2% 10% 2% 10%;">
+             <div>
+                 <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/createAccount.png' %}">
+             </div>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+         </div>
+     </div>
+ </div>
+ </div>
+   
+    <!-- Footer -->
+    <div class="site-footer" style="background-color: rgba(244, 242, 242, 0.54);">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-2">
+                    <h2 class="footer-heading mb-4 text-justify">About</h2>
+                    <p>The Preschooler Profiling and Monitoring System of Dasmariñas City Cavite monitors the nutritional status and vaccination status of preschoolers in the city's jurisdiction.
+                    </p>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <h2 class="footer-heading mb-4">Contact Us</h2>
+                            <ul class="list-unstyled">
+                            <li><span><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/contactLogo.png' %}" alt="Phone-logo"> +63-xxxxxxxxx</span></li>
+                            <li><a href="https://www.facebook.com/Cho3dasmarinas" target="_blank"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/facebookLogo.png' %}" alt="City Health Office-logo"> City Health Office </a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4">
+                            <h2 class="footer-heading mb-4">Resource Materials</h2>
+                            <ul class="list-unstyled">
+                            <li><a href="https://www.nnc.gov.ph/opt2022" target="_blank"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/nncLogo.png' %}" alt="NNC-logo"> eOPT Tools</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4">
+                            <h2 class="footer-heading mb-4">Resources</h2>
+                            <ul class="list-unstyled">
+                            <li><a href="https://www.nnc.gov.ph/" target="_blank"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/nncLogo.png' %}" alt="NNC-logo"> NNC Website</a></li>
+                            <li><a href="https://doh.gov.ph/" target="_blank"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/dohLogo.png' %}" alt="DOH-logo">DOH Website</a></li>
+                            <li><a href="https://www.who.int/tools/child-growth-standards" target="_blank"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/whoLogo.png' %}" alt="WHO-logo">WHO Website</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-12">
+                    <div class="d-sm-flex d-block border-top pt-5 justify-content-center align-items-start text-center gap-2">
+                        <p class="copyright"><small>
+                        Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                        </small>
+                        </p>
+                        <a class="text-muted" target="_blank" href="{% url 'privacyPolicy' %}">|<small> <u>Privacy Policy</u></small></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+</body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="{% static '/Javascript/testscript.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static '/Javascript/js/jquery-3.2.1.slim.min.js' %}"></script>
+<script src="{% static '/Javascript/js/popper.min.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.min.js' %}"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Your account is not yet validated',
+                    text: '{{message}}',
+                    confirmButtonText: "Ok",
+                    confirmButtonColor: '#EF3A25',
+                }).then(function() {
+                    window.location = "{% url 'login_registration' %}";
+                });
+            </script>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR  %}
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{message}}',
+                    text: 'Your Email or Password is incorrect',
+                    confirmButtonText: "Ok",
+                    confirmButtonColor: '#EF3A25',
+                }).then(function() {
+                    window.location = "{% url 'login_registration' %}";
+                });
+            </script>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS  %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account successfully created.',
+                    text: '{{message}}',
+                    confirmButtonText: "Ok",
+                    confirmButtonColor: '#EF3A25',
+                }).then(function() {
+                    window.location = "{% url 'login_registration' %}";
+                });
+            </script>
+        {% else %}
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Registration Failed',
+                    text: '{{message}}',
+                    confirmButtonText: "Ok",
+                    confirmButtonColor: '#EF3A25',
+                }).then(function() {
+                    window.location = "{% url 'login_registration' %}";
+                });
+            </script>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</html>

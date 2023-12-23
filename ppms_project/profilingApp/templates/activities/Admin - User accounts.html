@@ -1,0 +1,279 @@
+{% extends 'activities/Admin Home.html' %} <!-- header and footer of page linked from admin home html file -->
+{% load static %}
+{% block dashboard %}
+
+<title>PPMS | Accounts</title>
+</head>
+<body>
+
+<header>
+    <div class="site-header">
+    <nav class="navbar fixed-top index__navbar scrolled border-bottom" 
+    style=" padding-left:3%; padding-right:3%;">
+        <div class="flex-fill p-1 py-1">
+            <div id="mobileNav" class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="#" class="name" style="text-decoration: none;">
+                        <img id="adminIcon" class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="adminHidetitle" class="brand__name" style="color:rgb(0, 0, 0); margin-left:10px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <label class="burger "for="toggle"><i  id="hamburger" class="fa fa-fw fa-bars" style="font-size: 24px;"></i></label>
+                <input type="checkbox" id="toggle">
+                <div class="menu" id="navLinks">
+                    <ul id="nav" class="nav text-small">
+                        <li>
+                            <a href="{% url 'admin_home' %}" class="nav-link"data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"  
+                            title="Admin Home">
+                            <i id="navIcon" class="fa fa-fw fa-home" style="font-size: 24px;"></i>   
+                            <span id="navText" style="font-size: 20px;"><i class="fa fa-fw fa-home" style="font-size: 20px;margin-right:8px;"></i>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_home2' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Preschooler Status">
+                            <i id="navIcon" class="fa fa-3x fa-fw fa-id-card " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px;" ><i class="fa fa-fw fa-id-card" style="font-size: 20px;margin-right:8px;"></i>Preschooler Status</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_barangay' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="List of Barangay">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-landmark " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px;" ><i class="fa fa-fw fa-landmark" style="font-size: 20px;margin-right:8px;"></i>List of Barangay</span>
+                            </a>
+                        </li>
+                        <li>
+                            {% if invalidated_count > 0 %}
+                            <a href="{% url 'bhw_validation' %}" class="nav-link"  data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                                title="BHW Validation" >
+                                <i id="navIcon" class="fa fa-fw fa-user-md" style="font-size: 24px;"></i>
+                                <span id="navText" style="font-size: 20px; " ><i class="fa fa-fw fa-user-md" style="font-size: 20px;margin-right:8px;"></i>BHW Validation</span>
+                                <span class="position-absolute top-25 start-75 translate-middle badge rounded-pill bg-danger">
+                                    !
+                                    <span class="visually-hidden">BHW Validation</span>
+                                </span></a>
+                            {% else %}
+                            <a href="{% url 'bhw_validation' %}" class="nav-link"  data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                                title="BHW Validation" >
+                                <i id="navIcon" class="fa fa-fw fa-user-md" style="font-size: 24px;"></i>  
+                                <span id="navText"style="font-size: 20px; " ><i class="fa fa-fw fa-user-md" style="font-size: 20px;margin-right:8px;"></i>BHW Validation</span>
+                                </a>
+                            {% endif %}
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_userAccounts' %}"  style="color:rgb(27, 177, 92) !important;" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Accounts">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-users " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px; color:rgb(27, 177, 92) !important;" ><i class="fa fa-fw fa-users" style="font-size: 20px;margin-right:8px;"></i>User Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin_historyLogs' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="History Logs">
+                            <i id="navIcon" class="fa fa-3x fa-fw fas fa-clipboard-list " style="font-size: 24px;"></i>
+                            <span id="navText" style="font-size: 20px;" ><i class="fa fa-fw fa-clipboard-list" style="font-size: 20px;margin-right:8px;"></i>History Logs</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a id="navIcon" class="btn nav-link position-relative" id="dropdownUser1" data-bs-toggle="dropdown" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Settings" aria-expanded="false">
+                                <i class="fa fa-fw fa-user-cog bi" style="font-size: 24px;"></i>
+                                <span class="position-absolute top-100 start-75 translate-middle badge rounded-pill text-dark" style="border-radius: 50%;">
+                                    <i class="fa fa-lg fa-fw fa-caret-down bg-light" style="border-radius: 25%; margin-bottom: 15px;"></i>
+                                </span></a>
+                            </a>
+                            <a id="navText" style="color:white; text-decoration: none;font-size: 20px;"href="{% url 'logout' %}" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Log Out Account"><i class="fa fa-fw fa-sign-out-alt" style="font-size: 20px;margin-right:8px;"></i>Sign Out</a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2" style="margin-right:3%;" aria-labelledby="dropdownUser1">
+                                <div class="card p-3 d-flex align-items-center justify-content-center">
+                                    <div class="row d-block">
+                                        <div class="d-flex justify-content-center my-2">
+                                            <i class="fa fa-lg fa-fw fa-user bi" style="margin-left:5px ;"></i>  
+                                        </div>
+                                         <div class="d-flex justify-content-center text-center p-2">  
+                                            <span style="font-size: 15px;"> {{ user.first_name }} {{ user.last_name }} </span>
+                                         </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" style="background-color: rgba(255, 255, 255, 0); padding: 2px !important; margin-left:7px;"href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out-alt"></i>Sign out</a></li>
+                                </div>  
+                            </ul>                    
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </div>
+</header>
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+   })
+ </script>
+
+<!-- Dashboard -->
+<div id="grid" class="container-fluid" style="padding:3%; margin: top 65px;">
+    <div class="container-grid">
+        <div class="">
+            <div class="row"> 
+                <div class="col">
+                    <h3 style="text-align:left;">User Accounts</h3>
+                </div>
+            </div>
+        <hr>
+        <br>
+        </div>
+    </div>
+    <!--------------------- DataTables for BHW --------------------->
+    <div class="text-black">
+        <div class="row">
+            <div class="col">
+                <div class="card-header">
+                    <h3> Barangay Health Workers</h3>
+
+                </div>
+                <div class="card shadow-lg p-3 bg-white rounded" >
+                    <div class="table-responsive" >
+                        <table class="table table-hover table-cell-border" id="BHWuser_table" >
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">No.</th>
+                                    <th scope="col" class="text-center">Last Name</th>
+                                    <th scope="col" class="text-center">First Name</th>
+                                    <th scope="col" class="text-center">Middle Name</th>
+                                    <th scope="col" class="text-center">Suffix</th>
+                                    <th scope="col" class="text-center">Phone Number</th>
+                                    <th scope="col" class="text-center">Email</th>
+                                    <th scope="col" class="text-center">Barangay Designation</th>
+                                    <th scope="col" class=" text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bhw in bhws %}
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center">{{ bhw.user.last_name }}</td>
+                                    <td class="text-center">{{ bhw.user.first_name }}</td>
+                                    <td class="text-center">{{ bhw.user.middle_name }}</td>
+                                    <td class="text-center">{{ bhw.user.suffix_name }}</td>
+                                    <td class="text-center">{{ bhw.user.phone_num}}</td>
+                                    <td class="text-center">{{ bhw.user.email }}</td>
+                                    <td class="text-center">{{ bhw.bhw_barangay }}</td>
+                                    <td>
+                                        <div class="text-center">
+                                        <a href="{% url 'set_pass' bhw.user.id %}"><button type="button" style="background-color: #188045; color: #ffffff;" class="btn hoverableButton" title="Reset password"><i class="fa fa-lg fa-fw fa-key"></i></button></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+
+    <!--------------------- DataTables for Parents --------------------->
+    <div class="text-black pt-3">
+        <div class="row">
+            <div class="col">
+                <div class="card-header">
+                    <h3>Parents</h3>
+
+                </div>
+                <div class="card shadow-lg p-3 bg-white rounded" >
+                    <div class="table-responsive" >
+                        <table class="table table-hover table-cell-border" id="parentUser_table" >
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">No.</th>
+                                    <th scope="col" class="text-center">Last Name</th>
+                                    <th scope="col" class="text-center">First Name</th>
+                                    <th scope="col" class="text-center">Middle Name</th>
+                                    <th scope="col" class="text-center">Suffix</th>
+                                    <th scope="col" class="text-center">Phone Number</th>
+                                    <th scope="col" class="text-center">Email</th>
+                                    <th scope="col" class="text-center">Barangay Designation</th>
+                                    <th scope="col" class="nosort text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for parent in parents %}
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center">{{ parent.user.last_name }}</td>
+                                    <td class="text-center">{{ parent.user.first_name }}</td>
+                                    <td class="text-center">{{ parent.user.middle_name }}</td>
+                                    <td class="text-center">{{ parent.user.suffix_name }}</td>
+                                    <td class="text-center">{{ parent.user.phone_num }}</td>
+                                    <td class="text-center">{{ parent.user.email }}</td>
+                                    <td class="text-center">{{ parent.barangay }}</td>
+                                    <td style="text-align: center;">
+                                        <div class="text-center">
+                                            <a href="{% url 'set_pass' parent.user.id %}"><button type="button" style="background-color: #188045; color: #ffffff;" class="btn hoverableButton" title="Reset password"><i class="fa fa-lg fa-fw fa-key"></i></button></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
+            
+        <script>
+            var t = $('#BHWuser_table').DataTable({
+                info: 'true',
+                dom: 'rftip',
+                pageLength : 10,   
+                aoColumnDefs: [{
+                    'bSortable': false,
+                    'aTargets': ['nosort'],
+                    'orderable': false,
+                    'targets': [0,8],
+                }],
+                order: [[1, 'asc']],
+                });
+                t.on('order.dt search.dt', function () {
+                let i = 1;
+                t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                    this.data(i++);
+                });}).draw();
+        </script>
+
+        <script>
+            var t = $('#parentUser_table').DataTable({
+                info: 'true',
+                dom: 'rftip',
+                pageLength : 10,   
+                aoColumnDefs: [{
+                    'bSortable': false,
+                    'aTargets': ['nosort'],
+                    'orderable': false,
+                    'targets': [0,8],
+                }],
+                order: [[1, 'asc']],
+                });
+                t.on('order.dt search.dt', function () {
+                let i = 1;
+                t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                    this.data(i++);
+                });}).draw();
+        </script>
+
+</div>
+{% endblock %}

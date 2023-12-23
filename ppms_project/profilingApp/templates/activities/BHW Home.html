@@ -1,0 +1,475 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- table layout -->
+    <link rel="stylesheet" href="{% static '/CSS/DataTables/datatables.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/datatables.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/datatables.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static '/CSS/styles.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/CSS/css/bootstrap.min.css' %}">
+    <script src="{% static '/Javascript/js/jquery.min.js' %}"></script>
+    <script src="{% static '/Javascript/js/Chart.min.js' %}" crossorigin="anonymous"></script>
+    <link rel="icon" href="{% static '/Media/Dasmalogo.png' %}" type="image/y-icon">
+
+
+   {% block dashboard %} 
+    <title>PPMS | Home</title>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div class="site-header">
+    <nav class="navbar fixed-top index__navbar scrolled border-bottom" 
+    style=" padding-left:3%; padding-right:3%;">
+        <div class="flex-fill p-1 py-1">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="#" class="name" style="text-decoration: none;">
+                        <img class="navbar-icon" src="{% static '/Media/avatar.png' %}" alt="dasma-logo">
+                        <span id="hidetitle" class="brand__name" style="color:rgb(3, 3, 3); margin-left:10px;">City of Dasmariñas</span>
+                    </a>
+                </div>
+                <div id="navLinks">
+                    <ul class="nav text-small">
+                        <li>
+                            <a href="{% url 'bhw_home' %}" class="nav-link" style="color:rgb(27, 177, 92) !important;" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7" 
+                            title="Home">
+                            <i class="fa fa-fw fa-home" style="font-size: 24px;"></i>   
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'preschooler_dashboard' %}" class="nav-link" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="Preschooler List">
+                            <i class="fa fa-fw fa-id-card " style="font-size: 24px;"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="btn nav-link" id="dropdownUser1" data-bs-toggle="dropdown" data-toggle="tooltip" data-bs-placement="bottom" data-bs-offset="0,7"
+                            title="User Settings" aria-expanded="false">
+                                <i class="fa fa-fw fa-user-cog bi" style="font-size: 24px;"></i>
+                                <span class="position-absolute top-100 start-75 translate-middle badge rounded-pill text-dark" style="border-radius: 50%;">
+                                    <i class="fa fa-lg fa-fw fa-caret-down bg-light" style="border-radius: 25%; margin-bottom: 15px;"></i>
+                                </span></a>
+                                
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2" style="margin-right:3%;" aria-labelledby="dropdownUser1">
+                                
+                                <div class="text-dark d-block justify-content-start p-2"style="text-decoration: none; background-color: rgba(255,255,255,0); padding: 0 !important;">
+                                    <div class="card p-3 d-flex align-items-center justify-content-center">
+                                        <div class="row d-block">
+                                            <div class="d-flex justify-content-center my-2">
+                                                <i class="fa fa-lg fa-fw fa-user bi" style="margin-left:5px ;"></i>  
+                                            </div>
+                                             <div class="d-flex justify-content-center text-center p-2">  
+                                                <span style="font-size: 15px;"> {{ user.first_name }} {{ user.last_name }} </span>
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <a class="card-footer d-flex align-items-center justify-content-center" style="height:30px; background-color:none !important; border-radius: 0px !important;margin:0px !important;" href="{% url 'new_pass' user.id %}">
+                                        <p class="mt-3"style="font-size:15px;">View Profile</p>
+                                    </a>
+                                </div>
+                                <div>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" style="background-color: rgba(255, 255, 255, 0); padding: 2px !important; margin-left:7px;" href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out-alt mx-1"></i>Sign out</a></li>
+                                </div>
+                                
+                            </ul>                    
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    </div>
+</header>
+
+ 
+<!-- Tooltip Script -->
+<script>
+    $(function () {
+       $('[data-toggle="tooltip"]').tooltip()})
+       $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+       $('.tooltip').addClass('animated fade');
+   })
+ </script>
+
+<!-- Dashboard -->
+<div id="grid" class="container-fluid" style="margin-top:85px;">
+    <div class="container">
+        <div class="container">
+            <div class="row"> 
+                <div class="col-sm-6 mb-3 d-flex justify-content-sm-start justify-content-center">
+                    <h3 style="text-align:left;">Dashboard</h3>
+                </div>
+                <div class="col-sm-6  mb-3 d-flex justify-content-sm-end justify-content-center">
+                    <div class="card text-right" style="width: 10rem;">
+                        <div class="dropdown text-center" >
+                            <h6 class="text-uppercase text-muted dropdown-header">Barangay</h6>
+                            <h5 class="fa fa-home"> {{ bhw.bhw_barangay }}</h5>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="row d-flex align-items-stretch mb-3">
+            <div class="col-lg mb-2">
+                <div class="card shadow-sm bg-white rounded h-100">
+                    <div class="card-header">
+                        <h4 class="card-title">Number of Preschoolers</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                                <div class="d-block">
+                                    <p style="font-size: xx-large; " class="card-text fw-bold"><i class="fas fa-sm fa-child" style="color: #ffc107 ;"></i> {{ all_preschooler_count }}</p>
+                                    <p class="text-uppercase fw-bold">Registered preschoolers</p>
+                                </div>
+                                
+                            
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                                <div class="d-block">
+                                    <p style="font-size: xx-large;" class="card-text fw-bold"><i class="fa fa-sm fa-archive" style="color: #d86a10 ;"></i>  {{ preschooler_60_above_count }}</p>
+                                    <p class="text-uppercase fw-bold">Archived Preschoolers (60 months and above old) </p>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6 d-block">
+                                <p style="font-size: xx-large; " class="card-text fw-bold"><i class="fa fa-sm fa-check-circle" style="color: #2fbc44;"></i>  {{ preschooler_with_record_count }}</p>
+                                <p class="text-uppercase fw-bold">Preschoolers with records </p>
+                            </div>
+                            <div class="col-md-6 d-block">
+                                <p style="font-size: xx-large;" class="card-text fw-bold"><i class="fa fa-sm fa-times-circle" style="color: #d23114;" ></i>  {{ preschooler_without_record_count }}</p>
+                                <p class="text-uppercase fw-bold">Preschoolers with no records </p>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <div class="card-header">
+                <h4>Preschooler's Nutrition Summary Chart</h4>
+            </div>
+            <div class="card shadow-sm bg-white rounded">
+                <div class="row d-flex align-items-stretch" style="padding:25px 60px 0px 60px;">
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(238, 29, 35) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0 ">{{ severly }}</p>
+                                <h6 class="fw-bold">Severely Wasted</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(255, 241, 2) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ wasted }}</p>
+                                <h6 class="fw-bold">Moderately Wasted</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(0, 165, 79) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ normal }}</p>
+                                <h6 class="fw-bold">Normal</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(242, 98, 33) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ overweight }}</p>
+                                <h6 class="fw-bold">Overweight</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg my-2">
+                        <div class="shadow-md bg-white h-100 fw-bold justify-content-center d-flex align-items-center text-center" style="background-color:rgb(242, 98, 33) !important; border-radius: 50px;">
+                            <div class="d-block textShadow text-white p-3">
+                                <p style="font-size: xx-large;" class="card-text m-0">{{ obese }}</p>
+                                <h6 class="fw-bold">Obese</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="myBar" width="100%" height="50"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- USER MANUAL / HELP-->
+<input type="checkbox" id="helpCheckBox">
+<label class="help-container"  for="helpCheckBox" >
+    <label class="button helpIconButton hoverableButton" for="helpCheckBox">
+    <h5 class="text-white fw-bold textShadow rotateText">HELP</h5>
+    </label>
+    <ul class="helpOptions">
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ1">How can I update Immunization status of Preschoolers?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ2">How can I change Preschooler's Image?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ3">How can I update Preschooler's Records?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ4">How can I Export Nutritional Status?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ5">How can I Filter Data on Tables/Exports?</span>
+        </li>
+        <li>
+            <span class="btn-label hoverableButton" data-bs-toggle="modal" data-bs-target="#bhwQ6">How can I change Password?</span>
+        </li>
+    </ul>
+</label>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- USER MANUAL / HELP MODALS -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q1 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateVax.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q2 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateImage.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q3 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwUpdateRecords.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q4 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+        <div class="modal-header text-center d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+            </div>
+            <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding:2% 10% 2% 10%;">
+            <div>
+                <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwExport.png' %}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q5 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/filterTable.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- Q6 MODAL -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -->
+
+<div class="modal fade" id="bhwQ6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header text-center d-flex justify-content-between">
+                <div class="d-flex justify-content-center align-items-center"><img class="navbar-icon" style="margin-right:10px;" src="{% static '/Media/avatar.png' %}"><h5 class="modal-title" id="exampleModalLabel"> PPMS | User Assistance</h5>
+                </div>
+                <button type="button" class="btn hoverableButtonRed" style="background-color: #EF3A25; color: white; border-radius: 5px;" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:2% 10% 2% 10%;">
+                <div>
+                    <img class="img-fluid" alt="Responsive image" src="{% static '/Media/userManual/bhwChangePassword.png' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color: #EF3A25; color: white;" data-bs-dismiss="modal" aria-label="Close"> Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+
+
+</body>
+<!-- Form-->
+{% endblock %}
+
+<!-- Footer -->
+<div class="footer text-muted">
+    <div class="container">
+        <div class="row text-center d-flex align-items-center">
+            <div class="border-top p-2 d-flex justify-content-center align-items-center">
+                <p class="copyright"><small>
+                Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved <i class="icon-heart text-danger" aria-hidden="true"></i>
+                </small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#292b2c';
+    Chart.defaults.global.defaultFontSize = 15;
+   
+    
+    
+
+    // Pie Chart Example
+    var data_count = JSON.parse('{{ count_data|escapejs }}')
+    var ctx = document.getElementById("myBar");
+    var myBar = new Chart(ctx, {
+    type: 'bar',
+    options: {
+        legend: {
+            
+            display: false
+        },
+        scales:{
+            yAxes:[{
+                ticks: {
+                    beginAtZero: true,
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'NUMBER OF PRESCHOOLERS',
+                },
+            }],
+            xAxes:[{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'NUTRITIONAL STATUS',
+                },
+            }]
+        }
+    },
+    data:{
+        labels: ["Severely Wasted", "Moderately Wasted", "Normal","Overweight","Obese"],
+        datasets: [{
+                label: 'Preschoolers',
+                data: data_count,
+                backgroundColor: [
+                'rgb(238, 29, 35)',
+                'rgb(255, 241, 2)',
+                'rgb(0, 165, 79)',
+                'rgb(242, 98, 33)',
+                'rgb(242, 98, 33)',
+                ],
+                borderColor: [
+                'rgb(238, 29, 35)',
+                'rgb(255, 241, 2)',
+                'rgb(0, 165, 79)',
+                'rgb(242, 98, 33)',
+                'rgb(242, 98, 33)',
+                ],
+                borderWidth: 1
+            }
+            ]},
+    Option: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+             }   
+            },
+        },
+    });
+
+</script>
+<script src="{% static '/Javascript/js/functions.js' %}"></script>
+<script src="{% static '/Javascript/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="{% static '/Javascript/testscript.js' %}"></script>
+</html>
