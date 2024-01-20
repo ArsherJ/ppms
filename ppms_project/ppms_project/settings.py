@@ -140,7 +140,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'profilingApp/static')
 ]
-MEDIA_ROOT = 'profilingApp/static/Media'
+MEDIA_ROOT = f'{STATICFILES_DIRS[0]}/Media'
 MEDIA_URL = '/Media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
