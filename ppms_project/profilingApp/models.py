@@ -9,7 +9,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
-from pygrowup import Calculator, helpers
+# from pygrowup import Calculator, helpers
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
